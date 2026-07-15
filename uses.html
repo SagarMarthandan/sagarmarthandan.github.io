@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uses — Sagar Marthandan</title>
+<meta name="description" content="Tools, software, and stack I use for data engineering and development.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+  --color-green-dot: #22c55e;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+  --color-green-dot: #22c55e;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.nav-brand span { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; }
+.nav-brand:hover span { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 1.25rem; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s; }
+.nav-links a:hover { color: var(--color-text); }
+.nav-links a.active { color: var(--color-text); font-weight: 500; }
+.nav-links .desktop-only { display: none; }
+@media (min-width: 40rem) { .nav-links .desktop-only { display: inline; } }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.page-header { padding: 5rem 0 6rem; }
+@media (min-width: 40rem) { .page-header { padding: 6rem 0; } }
+.page-header .pre-title { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 1rem; }
+.page-header h1 { font-family: var(--font-display); font-size: 3rem; line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; }
+@media (min-width: 40rem) { .page-header h1 { font-size: 3.75rem; } }
+@media (min-width: 48rem) { .page-header h1 { font-size: 4.5rem; } }
+.page-header h1 .display-italic { font-style: italic; color: var(--color-text-secondary); }
+.page-header .subtitle { color: var(--color-text-secondary); max-width: 36rem; margin-top: 1.5rem; line-height: 1.625; }
+.page-divider { width: 100%; height: 1px; background: var(--color-border); margin-bottom: 3rem; }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-header .num { font-family: var(--font-display); font-size: 1.875rem; color: var(--color-text-muted); line-height: 1; }
+.section-header h2 { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--color-text-muted); font-weight: 400; }
+.section-header .line { flex: 1; height: 1px; background: var(--color-border); translate: 0 -4px; }
+.uses-list { display: flex; flex-direction: column; gap: 4rem; padding-bottom: 5rem; }
+.uses-category .item-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 40rem) { .uses-category .item-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; } }
+.uses-category .item { padding: 0.75rem 0; }
+.uses-category .item h3 { font-family: var(--font-display); font-size: 1.25rem; color: var(--color-text); transition: color 0.2s; }
+.uses-category .item:hover h3 { color: var(--color-accent); }
+.uses-category .item p { font-size: 0.875rem; color: var(--color-text-muted); margin-top: 0.125rem; }
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { opacity: 0; transform: translateY(12px); animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <div class="avatar">SM</div>
+    <span>Sagar</span>
+  </a>
+  <div class="nav-links">
+    <a href="/#projects" class="desktop-only">projects</a>
+    <a href="/blog.html">blog</a>
+    <a href="/uses.html" class="active">uses</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="container page-header">
+    <p class="pre-title fade-up delay-1">Hardware · Software · Stack</p>
+    <h1 class="fade-up delay-2">What I <span class="display-italic">use</span></h1>
+    <p class="subtitle fade-up delay-3">Tools, software, and infrastructure that power my data engineering workflow. Constantly evolving, rarely settled.</p>
+  </div>
+
+  <div class="container page-divider"></div>
+
+  <div class="container uses-list">
+    <!-- Hardware -->
+    <section class="uses-category">
+      <div class="section-header fade-up">
+        <span class="num">01</span>
+        <h2>Hardware</h2>
+        <div class="line"></div>
+      </div>
+      <div class="item-grid">
+        <div class="item fade-up">
+          <h3>Lenovo ThinkPad X1 Carbon</h3>
+          <p>Daily driver for data engineering. Light, powerful, great keyboard for long coding sessions.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Dell UltraSharp 27" 4K</h3>
+          <p>Secondary monitor for dashboards, monitoring, and documentation.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Logitech MX Master 3S</h3>
+          <p>Ergonomic, precise, silent clicks. The horizontal scroll wheel is a data-wrangling lifesaver.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Keychron K8 Pro</h3>
+          <p>Mechanical keyboard with hot-swappable switches. Gateron Browns for the balance of feel and noise.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Stack -->
+    <section class="uses-category">
+      <div class="section-header fade-up">
+        <span class="num">02</span>
+        <h2>Data Stack</h2>
+        <div class="line"></div>
+      </div>
+      <div class="item-grid">
+        <div class="item fade-up">
+          <h3>dbt Core & Cloud</h3>
+          <p>Transformations, testing, documentation — the backbone of every analytics project. Jinja + SQL.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Apache Airflow</h3>
+          <p>Orchestration and scheduling. DAGs for batch pipelines, sensors for event-driven triggers.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Snowflake</h3>
+          <p>Cloud warehouse of choice. Zero-copy cloning, time travel, and separation of compute/storage.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Google BigQuery</h3>
+          <p>Serverless analytics at scale. Columnar storage, BI Engine, and BigLake for lakehouse patterns.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Azure Databricks</h3>
+          <p>Spark-optimized analytics. Delta Lake for ACID transactions, Unity Catalog for governance.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Apache Kafka</h3>
+          <p>Streaming and event processing. Real-time data pipelines for live dashboards and microservices.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Airbyte</h3>
+          <p>Open-source EL(T). Connector catalog for APIs, databases, and file-based ingestion.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Dagster</h3>
+          <p>Asset-based orchestration. Software-defined assets for lineage, freshness, and declarative scheduling.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cloud & Infra -->
+    <section class="uses-category">
+      <div class="section-header fade-up">
+        <span class="num">03</span>
+        <h2>Cloud & Infrastructure</h2>
+        <div class="line"></div>
+      </div>
+      <div class="item-grid">
+        <div class="item fade-up">
+          <h3>Google Cloud Platform</h3>
+          <p>BigQuery, Composer (Airflow), Cloud Storage, IAM. Primary cloud for analytics workloads.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Microsoft Azure</h3>
+          <p>Databricks, Data Factory, ADLS Gen2, Key Vault, Entra RBAC. Enterprise data platform.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Terraform</h3>
+          <p>Infrastructure as code for cloud resources, IAM policies, and data warehouse configs.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Docker</h3>
+          <p>Containerized pipelines, local dev environments, Airflow workers, and Spark clusters.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>GitHub Actions</h3>
+          <p>CI/CD for dbt, data pipeline testing, Terraform plans, and artifact deployment.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>GitLab CI</h3>
+          <p>Alternative CI/CD runner. Used for multi-stage pipeline deployments and regression testing.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages & Tools -->
+    <section class="uses-category">
+      <div class="section-header fade-up">
+        <span class="num">04</span>
+        <h2>Languages & Tools</h2>
+        <div class="line"></div>
+      </div>
+      <div class="item-grid">
+        <div class="item fade-up">
+          <h3>Python</h3>
+          <p>Primary language. Pandas, PySpark, Airflow DAGs, FastAPI, LangChain, and scripting.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>SQL</h3>
+          <p>PostgreSQL, Snowflake SQL, BigQuery SQL, Spark SQL, DQL/DML/DDL, window functions.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>VS Code</h3>
+          <p>Editor of choice. Extensions for dbt, Python, SQL, YAML, and Jupyter notebooks.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Power BI</h3>
+          <p>BI and reporting. DAX, Power Query, row-level security, and paginated reports.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Streamlit</h3>
+          <p>Rapid data apps and LLM demos. Prototyping analytics interfaces for non-technical stakeholders.</p>
+        </div>
+        <div class="item fade-up">
+          <h3>Obsidian</h3>
+          <p>Knowledge base and personal wiki. Markdown vault for data engineering notes and reference.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>
