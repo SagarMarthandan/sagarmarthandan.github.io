@@ -11,14 +11,14 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sagar Marthandan — Data Engineer">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='68' text-anchor='middle' font-family='JetBrains Mono,monospace' font-size='42' font-weight='700' fill='%2360a5fa'>SM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ========== CSS Variables & Theme ========== */
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
   --color-bg: #fafafa;
@@ -103,19 +103,11 @@ nav {
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-}
 .nav-brand .avatar {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: var(--color-accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
+  object-fit: cover;
   flex-shrink: 0;
 }
 .nav-brand span {
@@ -370,6 +362,40 @@ nav {
   text-transform: uppercase;
   display: flex;
   justify-content: space-between;
+}
+
+.photo-frame {
+  position: relative;
+  width: 100%;
+  max-width: 20rem;
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  margin: 0 auto;
+}
+.photo-frame .portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter 0.7s;
+  filter: grayscale(0.15);
+}
+.photo-frame:hover .portrait {
+  filter: grayscale(0);
+}
+.photo-caption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  max-width: 20rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* ========== Section Headers ========== */
@@ -748,10 +774,11 @@ main { flex: 1; }
 
 <nav>
   <a href="/" class="nav-brand" aria-label="Home">
-    <div class="avatar">SM</div>
+    <img src="/images/sagar.jpg" class="avatar" alt="Sagar">
     <span>Sagar</span>
   </a>
   <div class="nav-links">
+    <a href="/">home</a>
     <a href="/repos.html">repos</a>
     <a href="/resume.html">resume</a>
     <a href="/contact.html">contact</a>
@@ -800,29 +827,12 @@ main { flex: 1; }
         </div>
       </div>
       <div class="hero-visual fade-up delay-2">
-        <div class="card">
-          <div class="card-header">
-            <div class="icon">⚙️</div>
-            <div class="info">
-              <h3>Modern Data Stack</h3>
-              <p>End-to-end data platform</p>
-            </div>
-          </div>
-          <div class="card-stack">
-            <span>dbt</span>
-            <span>Airflow</span>
-            <span>Snowflake</span>
-            <span>Spark</span>
-            <span>Kafka</span>
-            <span>Python</span>
-            <span>BigQuery</span>
-            <span>Databricks</span>
-            <span>Terraform</span>
-          </div>
-          <div class="card-tagline">
-            <span>Fig. 01 — The Stack</span>
-            <span>Berlin / DE</span>
-          </div>
+        <div class="photo-frame">
+          <img src="/images/sagar.jpg" alt="Sagar Marthandan" class="portrait">
+        </div>
+        <div class="photo-caption">
+          <span>Fig. 01 — The Portrait</span>
+          <span>Berlin / DE</span>
         </div>
       </div>
     </div>
