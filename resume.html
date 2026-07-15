@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume — Sagar Marthandan</title>
+<meta name="description" content="Data & Analytics Engineer resume — M.Sc. Computer Science. dbt, Airflow, Snowflake, Spark, Kafka, GCP, Azure.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+  --color-green-dot: #22c55e;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+  --color-green-dot: #22c55e;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.nav-brand span { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; }
+.nav-brand:hover span { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s; }
+.nav-links a:hover { color: var(--color-text); }
+.nav-links a.active { color: var(--color-text); font-weight: 500; }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.page-header { padding: 5rem 0 0; }
+@media (min-width: 40rem) { .page-header { padding: 6rem 0 0; } }
+.page-header .pre-title { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 1rem; }
+.page-header h1 { font-family: var(--font-display); font-size: 3rem; line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; }
+@media (min-width: 40rem) { .page-header h1 { font-size: 3.75rem; } }
+@media (min-width: 48rem) { .page-header h1 { font-size: 4.5rem; } }
+.page-header h1 .display-italic { font-style: italic; color: var(--color-text-secondary); }
+.page-header .subtitle { color: var(--color-text-secondary); max-width: 36rem; margin-top: 1.5rem; line-height: 1.625; }
+.page-divider { width: 100%; height: 1px; background: var(--color-border); margin: 3rem 0; }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-header .num { font-family: var(--font-display); font-size: 1.875rem; color: var(--color-text-muted); line-height: 1; }
+.section-header h2 { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--color-text-muted); font-weight: 400; }
+.section-header .line { flex: 1; height: 1px; background: var(--color-border); translate: 0 -4px; }
+
+/* Resume styles */
+.resume-section { padding-bottom: 4rem; }
+.resume-section:last-of-type { padding-bottom: 5rem; }
+.resume-header-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+.resume-header-card .name-title h2 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.resume-header-card .name-title p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+.resume-header-card .contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+.resume-header-card .contact-row a, .resume-header-card .contact-row span {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+}
+.resume-header-card .contact-row a:hover { color: var(--color-accent); }
+.resume-header-card .visa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-green-dot);
+  padding: 0.375rem 0.75rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 0.25rem;
+}
+.summary-text {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 65ch;
+  margin-bottom: 2rem;
+}
+
+/* Education */
+.edu-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.edu-item:last-child { border-bottom: none; }
+.edu-item .degree {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+.edu-item .school {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.125rem;
+}
+.edu-item .date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Skills grid */
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 40rem) { .skills-grid { grid-template-columns: 1fr 1fr; } }
+.skill-block {
+  padding: 0.75rem 0;
+}
+.skill-block h3 {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.skill-block p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* Projects on resume */
+.resume-project {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.resume-project:last-child { border-bottom: none; }
+.resume-project:first-of-type { padding-top: 0; }
+.resume-project h3 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.resume-project .tools {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-accent);
+  margin-top: 0.25rem;
+}
+.resume-project p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+.resume-project ul {
+  margin-top: 0.375rem;
+  padding-left: 1.25rem;
+}
+.resume-project ul li {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.25rem;
+}
+
+/* Experience */
+.exp-item {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.exp-item:last-child { border-bottom: none; }
+.exp-item .exp-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-bottom: 0.5rem;
+}
+@media (min-width: 40rem) {
+  .exp-item .exp-header { flex-direction: row; justify-content: space-between; align-items: baseline; }
+}
+.exp-item .exp-header .company {
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+.exp-item .exp-header .date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+.exp-item .role {
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+.exp-item ul {
+  padding-left: 1.25rem;
+}
+.exp-item ul li {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.25rem;
+}
+
+/* Languages */
+.lang-list { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.lang-list span {
+  font-size: 0.875rem;
+}
+.lang-list span .level {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-left: 0.5rem;
+}
+
+.resume-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.resume-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.625rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  color: var(--color-text);
+  transition: all 0.2s;
+}
+.resume-actions a:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.resume-actions a.primary {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+.resume-actions a.primary:hover {
+  opacity: 0.9;
+}
+
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { opacity: 0; transform: translateY(12px); animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <div class="avatar">SM</div>
+    <span>Sagar</span>
+  </a>
+  <div class="nav-links">
+    <a href="/repos.html">repos</a>
+    <a href="/resume.html" class="active">resume</a>
+    <a href="/contact.html">contact</a>
+    <a href="/blog.html">blog</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="container page-header">
+    <p class="pre-title fade-up delay-1">CV · Experience · Projects</p>
+    <h1 class="fade-up delay-2"><span class="display-italic">Resume</span></h1>
+    <p class="subtitle fade-up delay-3">Data & Analytics Engineer focused on the modern data stack. M.Sc. in Computer Science. Building end-to-end data platforms.</p>
+    <div class="resume-actions fade-up delay-4">
+      <a href="https://github.com/SagarMarthandan/yaml-cv-pipeline" target="_blank" rel="noopener" class="primary">Download PDF ↗</a>
+      <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div>
+
+  <div class="container page-divider"></div>
+
+  <!-- Summary & Profile -->
+  <section class="resume-section container">
+    <div class="resume-header-card fade-up">
+      <div class="name-title">
+        <h2>Sagar Marthandan</h2>
+        <p>Data & Analytics Engineer</p>
+      </div>
+      <div class="contact-row">
+        <span>📍 Kiel, Germany</span>
+        <span>📱 +49 176 74138359</span>
+        <a href="mailto:sagar.marthandan@yahoo.com">✉ sagar.marthandan@yahoo.com</a>
+        <a href="https://github.com/SagarMarthandan" target="_blank">🐙 github.com/SagarMarthandan</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank">💼 linkedin.com/in/sagarmarthandan</a>
+      </div>
+      <div class="visa-badge">
+        ✅ Authorized to work in Germany · Immediately available
+      </div>
+    </div>
+
+    <p class="summary-text fade-up">
+      Data & Analytics Engineer with hands-on experience in generative and agentic AI, RAG pipelines, and production-grade data engineering across GCP, AWS, and Azure. Built end-to-end data platforms using dbt, Apache Airflow, Snowflake, Spark, and Kafka — from raw ingestion to BI dashboards. Research background in ML anomaly detection (M.Sc. Computer Science, CAU Kiel). Comfortable in self-organized agile teams and motivated by technology that creates real-world impact.
+    </p>
+  </section>
+
+  <!-- Education -->
+  <section class="resume-section container">
+    <div class="section-header fade-up">
+      <span class="num">01</span>
+      <h2>Education</h2>
+      <div class="line"></div>
+    </div>
+    <div class="fade-up">
+      <div class="edu-item">
+        <div>
+          <div class="degree">M.Sc. in Quantitative Economics</div>
+          <div class="school">Christian-Albrecht-University of Kiel, Germany</div>
+        </div>
+        <div class="date">Present</div>
+      </div>
+      <div class="edu-item">
+        <div>
+          <div class="degree">M.Sc. in Computer Science</div>
+          <div class="school">Christian-Albrecht-University of Kiel, Germany</div>
+        </div>
+        <div class="date">11/2023</div>
+      </div>
+      <div class="edu-item">
+        <div>
+          <div class="degree">B.Tech in Information Technology</div>
+          <div class="school">National Institute of Technology Karnataka, India</div>
+        </div>
+        <div class="date">05/2014</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Skills -->
+  <section class="resume-section container">
+    <div class="section-header fade-up">
+      <span class="num">02</span>
+      <h2>Skills</h2>
+      <div class="line"></div>
+    </div>
+    <div class="skills-grid fade-up">
+      <div class="skill-block">
+        <h3>Programming & Query</h3>
+        <p>Python · SQL (CTEs, Window Functions) · PySpark · Spark SQL · DAX · Power Query (M) · Jinja</p>
+      </div>
+      <div class="skill-block">
+        <h3>Data Engineering</h3>
+        <p>dbt · Apache Airflow · Dagster · Airbyte · ELT/ETL · Incremental Modeling · SCD Type 2 · Dimensional Modeling · Star Schema · Medallion Architecture</p>
+      </div>
+      <div class="skill-block">
+        <h3>Cloud & Warehousing</h3>
+        <p>Snowflake · GCP (BigQuery, IAM) · Azure (Databricks, Data Factory, ADLS Gen2) · AWS (S3, EC2, IAM) · PostgreSQL · Delta Lake · Terraform · Docker</p>
+      </div>
+      <div class="skill-block">
+        <h3>AI & ML</h3>
+        <p>Generative AI · Agentic AI · RAG · LangChain · LangGraph · FAISS · Ollama (Qwen) · Prompt Engineering · OpenAI API · HuggingFace</p>
+      </div>
+      <div class="skill-block">
+        <h3>BI & Visualization</h3>
+        <p>Power BI · Apache Superset · Looker Studio · Streamlit · Plotly · Matplotlib · Seaborn · Microsoft Excel</p>
+      </div>
+      <div class="skill-block">
+        <h3>Data Quality & CI/CD</h3>
+        <p>Soda Core · dbt Tests · GitHub Actions · GitLab CI · RBAC · Data Governance · Data Lineage · Monitoring & Alerting</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects (8 highlighted) -->
+  <section class="resume-section container">
+    <div class="section-header fade-up">
+      <span class="num">03</span>
+      <h2>Key Projects</h2>
+      <div class="line"></div>
+    </div>
+
+    <div class="fade-up">
+      <div class="resume-project">
+        <h3>NYC Taxi End-to-End Cloud Data Pipeline</h3>
+        <div class="tools">Python, Apache Airflow, Airbyte, dbt, BigQuery, GCP, Terraform, Docker, CI/CD</div>
+        <p>Engineered a production-grade ELT pipeline ingesting 37M NYC Taxi trip records (2025) into BigQuery via Airbyte, orchestrated with Airflow DAGs. Modeled through dbt mart layers delivering KPIs across trip volumes, route performance, and demand forecasting. Provisioned GCP infrastructure via Terraform with automated CI/CD.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>RAG-Based PDF Query Assistant</h3>
+        <div class="tools">Python, LangChain, FAISS, OpenAI Embeddings, Ollama (Qwen), PyPDF2</div>
+        <p>Built an end-to-end RAG pipeline ingesting PDF documents, chunking with LangChain's CharacterTextSplitter, and indexing embeddings into a FAISS vector store. Implemented local LLM variant using Ollama + Qwen enabling fully offline document Q&A — eliminating API costs and data privacy concerns.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>Chicago Data + Divvy Bike-Share Pipeline</h3>
+        <div class="tools">Apache Spark, Kafka, dbt, Python, PostgreSQL, Docker</div>
+        <p>Dual-mode data pipeline exploring whether crime near Divvy stations affects ridership. Batch ingestion via Spark with dimensional modeling, plus streaming pipeline via Kafka for real-time events. dbt transformations with SCD Type 2 and incremental fact models.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>ATS Resume Pipeline — Streamlit App</h3>
+        <div class="tools">Python, Streamlit, OpenCode Go API, LaTeX/pdflatex, PowerShell</div>
+        <p>End-to-end resume tailoring app automating 6-stage ATS pipeline (analysis, rewrite, cover letter, PDF compilation, JD archival, visual audit) for DACH systems. Custom decision terminal using st.session_state state-machine with A/B/C strategy selection. Multi-pass pdflatex with visual eye-test audit.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>Formula 1 Data Platform — Azure Databricks</h3>
+        <div class="tools">Azure Databricks, PySpark, Delta Lake, ADLS Gen2, Azure Data Factory, Unity Catalog</div>
+        <p>End-to-end ELT pipeline implementing Medallion Architecture (Bronze → Silver → Gold) on Azure. Enforced RBAC via Entra ID and Unity Catalog. Integrated ADF trigger-based dataflows for automated incremental loading across the Lakehouse.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>YouTube Analytics ELT Platform</h3>
+        <div class="tools">Python, Apache Airflow, PostgreSQL, Docker, Redis, Soda Core, Pytest, GitHub Actions</div>
+        <p>Containerized ETL platform with multi-DAG Airflow workflows extracting paginated YouTube API responses. Soda Core validation checks + GitHub Actions CI/CD covering unit, integration, and end-to-end tests. Drift management for deleted/private videos.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>Airbnb Analytics — Modern Data Stack</h3>
+        <div class="tools">dbt, Snowflake, Dagster, Python, dbt_expectations</div>
+        <p>Complete Modern Data Stack ELT pipeline with dimensional modeling across staging, core, and mart layers. SCD Type 2 snapshots for customer behavior tracking, incremental fact models for warehouse efficiency, and Dagster scheduling with dbt_expectations quality gates.</p>
+      </div>
+
+      <div class="resume-project">
+        <h3>Bitcoin Analytics Engineering Pipeline</h3>
+        <div class="tools">AWS S3, Snowflake, dbt, Power BI, Python, GitHub Actions</div>
+        <p>Multi-layered ELT dbt pipelines transforming nested Bitcoin JSON from S3 into dimensional models. Python-based dbt models with Snowflake LATERAL FLATTEN for nested payload optimization. Custom Jinja macros, automated dbt test suites, and CI/CD deployment.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="resume-section container">
+    <div class="section-header fade-up">
+      <span class="num">04</span>
+      <h2>Experience</h2>
+      <div class="line"></div>
+    </div>
+    <div class="fade-up">
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="company">Staff 4 Cruise, Kiel</span>
+          <span class="date">10/2019 – 12/2023</span>
+        </div>
+        <div class="role">Supply Chain Coordinator & Supervisor (Working Student)</div>
+        <ul>
+          <li>Oversaw inventory and personnel management for daily supply operations on AIDA cruise ships.</li>
+          <li>Formulated and executed supply chain strategies coordinating shipments and receipts across departments.</li>
+          <li>Collaborated with internal teams to create and implement production plans.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-header">
+          <span class="company">IBM India Private Ltd, India</span>
+          <span class="date">08/2014 – 12/2018</span>
+        </div>
+        <div class="role">Systems Programmer L2 — CICS Data & Messaging Infrastructure</div>
+        <ul>
+          <li>Maintained high-throughput ERP transaction infrastructure (CICS/Db2) and enterprise messaging (IBM MQ) at scale for business-critical systems.</li>
+          <li>Introduced CICS audits and monitoring to measure transaction latency and detect issues before MQ export — improving data integrity and operational resilience.</li>
+          <li>Used operational event data (SMF, MQ Events) to drive capacity planning and modernize enterprise data pipelines.</li>
+          <li>Reduced platform overhead by 15% through automation of recurring CICS and MQ maintenance using event log insights.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Languages -->
+  <section class="resume-section container">
+    <div class="section-header fade-up">
+      <span class="num">05</span>
+      <h2>Languages</h2>
+      <div class="line"></div>
+    </div>
+    <div class="lang-list fade-up">
+      <span>English <span class="level">C2 (Proficient)</span></span>
+      <span>German <span class="level">B1 (Intermediate)</span></span>
+      <span>Hindi <span class="level">Native</span></span>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>

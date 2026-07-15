@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repos — Sagar Marthandan</title>
+<meta name="description" content="All my data engineering, analytics, and AI projects on GitHub.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+  --color-green-dot: #22c55e;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+  --color-green-dot: #22c55e;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.nav-brand span { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; }
+.nav-brand:hover span { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s; }
+.nav-links a:hover { color: var(--color-text); }
+.nav-links a.active { color: var(--color-text); font-weight: 500; }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.page-header { padding: 5rem 0 0; }
+@media (min-width: 40rem) { .page-header { padding: 6rem 0 0; } }
+.page-header .pre-title { font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 1rem; }
+.page-header h1 { font-family: var(--font-display); font-size: 3rem; line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; }
+@media (min-width: 40rem) { .page-header h1 { font-size: 3.75rem; } }
+@media (min-width: 48rem) { .page-header h1 { font-size: 4.5rem; } }
+.page-header h1 .display-italic { font-style: italic; color: var(--color-text-secondary); }
+.page-header .subtitle { color: var(--color-text-secondary); max-width: 36rem; margin-top: 1.5rem; line-height: 1.625; }
+.page-divider { width: 100%; height: 1px; background: var(--color-border); margin: 3rem 0; }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-header .num { font-family: var(--font-display); font-size: 1.875rem; color: var(--color-text-muted); line-height: 1; }
+.section-header h2 { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--color-text-muted); font-weight: 400; }
+.section-header .line { flex: 1; height: 1px; background: var(--color-border); translate: 0 -4px; }
+.repo-list { padding-bottom: 5rem; display: flex; flex-direction: column; gap: 0; }
+.repo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: all 0.2s;
+  position: relative;
+}
+@media (min-width: 40rem) { .repo-item { gap: 1.5rem; padding: 2rem 0; } }
+.repo-item:hover { padding-left: 0.5rem; padding-right: 0.5rem; }
+.repo-item:last-child { border-bottom: none; }
+.repo-item .num {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  line-height: 1;
+  padding-top: 0.25rem;
+  width: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.repo-item .content { min-width: 0; }
+.repo-item .content .top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.repo-item .content .top-row h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-text);
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+@media (min-width: 40rem) { .repo-item .content .top-row h3 { font-size: 1.5rem; } }
+.repo-item:hover .content .top-row h3 { color: var(--color-accent); }
+.repo-item .content .top-row .badge {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  line-height: 1.4;
+}
+.badge-in-progress {
+  background: rgba(251, 191, 36, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+.badge-archived {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.badge-fork {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+.repo-item .content p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.625;
+  max-width: 65ch;
+}
+.repo-item .content .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.repo-item .content .tags span {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.repo-item .content .meta {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-top: 0.5rem;
+}
+.repo-item .arrow {
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  transition: transform 0.3s, color 0.2s;
+  padding-top: 0.25rem;
+  flex-shrink: 0;
+}
+.repo-item:hover .arrow { transform: translate(4px, -4px); color: var(--color-accent); }
+.repo-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+.repo-filters button {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  color: var(--color-text-muted);
+  background: transparent;
+  transition: all 0.2s;
+}
+.repo-filters button:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.repo-filters button.active {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { opacity: 0; transform: translateY(12px); animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <div class="avatar">SM</div>
+    <span>Sagar</span>
+  </a>
+  <div class="nav-links">
+    <a href="/repos.html" class="active">repos</a>
+    <a href="/resume.html">resume</a>
+    <a href="/contact.html">contact</a>
+    <a href="/blog.html">blog</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <div class="container page-header">
+    <p class="pre-title fade-up delay-1">GitHub · Projects · Code</p>
+    <h1 class="fade-up delay-2">All <span class="display-italic">Repos</span></h1>
+    <p class="subtitle fade-up delay-3">Every public project I've built — data engineering pipelines, analytics platforms, AI tooling, and more. Hover for details, click to explore.</p>
+  </div>
+
+  <div class="container page-divider"></div>
+
+  <div class="container">
+    <div class="repo-filters fade-up" id="filters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="in-progress">In Progress</button>
+      <button data-filter="de">Data Engineering</button>
+      <button data-filter="analytics">Analytics</button>
+      <button data-filter="ai">AI / RAG</button>
+      <button data-filter="fork">Forks</button>
+    </div>
+
+    <div class="repo-list" id="repoList">
+      <!-- IN PROGRESS — featured first -->
+      <a href="https://github.com/SagarMarthandan/NYC-Bigquery" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">01</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>NYC-Bigquery</h3>
+            <span class="badge badge-in-progress">In progress</span>
+          </div>
+          <p>End-to-end cloud data pipeline ingesting 37M NYC Taxi trip records via Airbyte → BigQuery, orchestrated with Airflow, transformed through dbt mart layers, provisioned with Terraform. 🚧 ~75% complete.</p>
+          <div class="tags">
+            <span>Airflow</span><span>dbt</span><span>BigQuery</span><span>GCP</span><span>Terraform</span><span>Airbyte</span><span>Python</span>
+          </div>
+          <div class="meta">Updated May 2026 · HCL</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/chicago-data-pipeline" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">02</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>chicago-data-pipeline</h3>
+            <span class="badge badge-in-progress">In progress</span>
+          </div>
+          <p>Chicago Crime + Divvy bike-share pipeline exploring whether crime near stations affects ridership. Batch (Spark) + streaming (Kafka) ingestion with dbt transformations and dimensional modeling.</p>
+          <div class="tags">
+            <span>Spark</span><span>Kafka</span><span>dbt</span><span>Python</span><span>PostgreSQL</span><span>Docker</span>
+          </div>
+          <div class="meta">Updated Jul 2026 · HTML</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <!-- Core Data Engineering -->
+      <a href="https://github.com/SagarMarthandan/Youtube_E2E_DE" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">03</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>YouTube E2E DE</h3>
+          </div>
+          <p>Containerized ELT platform orchestrating YouTube Data API extraction through multi-layer PostgreSQL schemas with Airflow. Validated by Soda Core, deployed via GitHub Actions CI/CD.</p>
+          <div class="tags">
+            <span>Airflow</span><span>PostgreSQL</span><span>Docker</span><span>Soda Core</span><span>GitHub Actions</span><span>Python</span>
+          </div>
+          <div class="meta">Updated May 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/E2E-weather-data-report" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">04</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>E2E Weather Data Pipeline</h3>
+          </div>
+          <p>Mini end-to-end weather data pipeline — API ingestion via Airflow, dbt transformations, Redis broker, Superset dashboards all running in Docker Compose.</p>
+          <div class="tags">
+            <span>Airflow</span><span>dbt</span><span>PostgreSQL</span><span>Docker</span><span>Redis</span><span>Superset</span><span>Python</span>
+          </div>
+          <div class="meta">Updated Feb 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/F1-AzureDatabricks" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">05</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>F1 Azure Databricks</h3>
+          </div>
+          <p>Production-grade Formula 1 data platform on Azure implementing Medallion Architecture (Bronze → Silver → Gold) with PySpark, Delta Lake, and Azure Data Factory orchestration.</p>
+          <div class="tags">
+            <span>Databricks</span><span>PySpark</span><span>Delta Lake</span><span>Azure</span><span>ADF</span><span>ADLS Gen2</span>
+          </div>
+          <div class="meta">Updated Jan 2026 · Jupyter</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/BTC" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">06</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>BTC Data Pipeline</h3>
+          </div>
+          <p>Bitcoin analytics engineering pipeline ingesting nested JSON from AWS S3 into Snowflake via dbt transformations. Power BI dashboards for financial analytics and anomaly detection.</p>
+          <div class="tags">
+            <span>AWS S3</span><span>Snowflake</span><span>dbt</span><span>Power BI</span><span>Python</span><span>Jinja</span>
+          </div>
+          <div class="meta">Updated Apr 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/mini-kafka-stream" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">07</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>mini-kafka-stream</h3>
+          </div>
+          <p>Kafka Producer-Consumer pipeline streaming FX rates from CSV — real-time analytics with sub-second latency batch comparison. Local Kafka + Zookeeper setup documented in Jupyter.</p>
+          <div class="tags">
+            <span>Kafka</span><span>Python</span><span>Pandas</span><span>Jupyter</span><span>Streaming</span>
+          </div>
+          <div class="meta">Updated Feb 2026 · Jupyter</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/docker-practice" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">08</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>docker-practice</h3>
+          </div>
+          <p>Docker and containerization practice — Compose files, multi-stage builds, and containerized data pipeline environments.</p>
+          <div class="tags">
+            <span>Docker</span><span>Python</span>
+          </div>
+          <div class="meta">Updated Jun 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/terrafom-demo" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">09</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>terraform-demo</h3>
+          </div>
+          <p>Learning Terraform with GCP — infrastructure-as-code for BigQuery, IAM, and cloud resource provisioning.</p>
+          <div class="tags">
+            <span>Terraform</span><span>GCP</span><span>IaC</span>
+          </div>
+          <div class="meta">Updated May 2026 · HCL</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <!-- Analytics -->
+      <a href="https://github.com/SagarMarthandan/DBT-Airbnb-Practice-Project" target="_blank" rel="noopener" class="repo-item fade-up" data-category="analytics">
+        <span class="num">10</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>DBT Airbnb Project</h3>
+          </div>
+          <p>dbt bootcamp project transforming raw Airbnb data through Staging, Core, and Mart layers on Snowflake with SCD Type 2 snapshots, incremental fact tables, and dbt_expectations quality tests.</p>
+          <div class="tags">
+            <span>dbt</span><span>Snowflake</span><span>Python</span><span>SCD Type 2</span><span>Dagster</span>
+          </div>
+          <div class="meta">Updated May 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/powerBI---Project" target="_blank" rel="noopener" class="repo-item fade-up" data-category="analytics">
+        <span class="num">11</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>Power BI — Sales Analytics</h3>
+          </div>
+          <p>Comprehensive sales dashboard built with Star Schema dimensional modeling, DAX measures, and Power Query M — delivering revenue, customer, and product performance insights.</p>
+          <div class="tags">
+            <span>Power BI</span><span>DAX</span><span>Power Query</span><span>SQL</span><span>Data Modeling</span>
+          </div>
+          <div class="meta">Updated Jan 2026</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/DBT_DEMO" target="_blank" rel="noopener" class="repo-item fade-up" data-category="analytics">
+        <span class="num">12</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>dbt Demo — Bike Rentals</h3>
+          </div>
+          <p>Modern data engineering project transforming raw bike trip + weather data into a Star Schema dimensional model using dbt Cloud and Snowflake.</p>
+          <div class="tags">
+            <span>dbt</span><span>Snowflake</span><span>SQL</span><span>Jinja</span>
+          </div>
+          <div class="meta">Updated Dec 2025</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <!-- AI / RAG -->
+      <a href="https://github.com/SagarMarthandan/RAG-LLM-pdf-query" target="_blank" rel="noopener" class="repo-item fade-up" data-category="ai">
+        <span class="num">13</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>RAG-LLM-pdf-query</h3>
+          </div>
+          <p>End-to-end RAG pipeline parsing PDFs via PyPDF2, chunking with LangChain, embedding into FAISS vector store for sub-millisecond semantic search. Local LLM variant via Ollama + Qwen for offline Q&A.</p>
+          <div class="tags">
+            <span>LangChain</span><span>FAISS</span><span>OpenAI</span><span>Ollama</span><span>Python</span><span>RAG</span>
+          </div>
+          <div class="meta">Updated May 2026 · Jupyter</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/okf-cv" target="_blank" rel="noopener" class="repo-item fade-up" data-category="ai">
+        <span class="num">14</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>okf-cv</h3>
+          </div>
+          <p>ATS-optimized resume and cover letter pipeline with hybrid OKF phrase matching + Zvec semantic embeddings, self-learning keyword enrichment, and cross-process-safe parallel execution.</p>
+          <div class="tags">
+            <span>Python</span><span>LLM</span><span>FAISS</span><span>RAG</span><span>NLP</span>
+          </div>
+          <div class="meta">Updated Jul 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/yaml-cv-pipeline" target="_blank" rel="noopener" class="repo-item fade-up" data-category="ai">
+        <span class="num">15</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>yaml-cv-pipeline</h3>
+          </div>
+          <p>ATS-optimized application materials generator — structured YAML compiles to PDF/LaTeX with Zvec semantic search for market-aligned keyword optimization.</p>
+          <div class="tags">
+            <span>Python</span><span>LaTeX</span><span>YAML</span><span>NLP</span><span>Zvec</span>
+          </div>
+          <div class="meta">Updated Jun 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/ATS-Resume-Streamlit" target="_blank" rel="noopener" class="repo-item fade-up" data-category="ai">
+        <span class="num">16</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>ATS Resume Streamlit</h3>
+          </div>
+          <p>Streamlit app automating a 6-stage ATS workflow (analysis → rewrite → cover letter → PDF → archival → audit) via OpenCode Go API, with interactive decision terminal and multi-pass pdflatex.</p>
+          <div class="tags">
+            <span>Streamlit</span><span>Python</span><span>LaTeX</span><span>LLM</span><span>Prompt Eng.</span>
+          </div>
+          <div class="meta">Updated Jun 2026 · Python</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/PCA-using-Co-Median" target="_blank" rel="noopener" class="repo-item fade-up" data-category="ai">
+        <span class="num">17</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>PCA using Co-Median</h3>
+          </div>
+          <p>Robust PCA implementation replacing mean-based covariance with Co-Median Absolute Deviation. Achieves up to 12% improvement in Silhouette Score over standard PCA under data poisoning.</p>
+          <div class="tags">
+            <span>Python</span><span>NumPy</span><span>scikit-learn</span><span>PCA</span><span>Anomaly Detection</span>
+          </div>
+          <div class="meta">Updated Jan 2026 · Jupyter</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <!-- Academic / ML -->
+      <a href="https://github.com/SagarMarthandan/SQL-Practice" target="_blank" rel="noopener" class="repo-item fade-up" data-category="analytics">
+        <span class="num">18</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>SQL-Practice</h3>
+          </div>
+          <p>SQL exercises — CTEs, window functions, joins, query optimization patterns for analytics engineering.</p>
+          <div class="tags"><span>SQL</span><span>PostgreSQL</span></div>
+          <div class="meta">Updated Feb 2026</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/Databricks-Mini-Project" target="_blank" rel="noopener" class="repo-item fade-up" data-category="de">
+        <span class="num">19</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>Databricks Mini Project</h3>
+          </div>
+          <p>Data Lakehouse on Azure Databricks — Medallion Architecture transforming raw F1 data into actionable analytics with automated orchestration.</p>
+          <div class="tags">
+            <span>Databricks</span><span>PySpark</span><span>Delta Lake</span><span>Azure</span>
+          </div>
+          <div class="meta">Updated Jan 2026 · Jupyter</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <!-- Forks -->
+      <a href="https://github.com/SagarMarthandan/ai-agents-for-beginners" target="_blank" rel="noopener" class="repo-item fade-up" data-category="fork">
+        <span class="num">20</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>AI Agents for Beginners</h3>
+            <span class="badge badge-fork">Fork</span>
+          </div>
+          <p>Microsoft's 12-lesson intro to building AI agents — studying multi-agent patterns and tool-use architectures.</p>
+          <div class="tags"><span>AI Agents</span><span>Python</span><span>Microsoft</span></div>
+          <div class="meta">Updated May 2026 · Fork</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/career-ops-data-engineering" target="_blank" rel="noopener" class="repo-item fade-up" data-category="fork">
+        <span class="num">21</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>Career-Ops Data Engineering</h3>
+            <span class="badge badge-fork">Fork</span>
+          </div>
+          <p>AI-powered job search system — 14 skill modes, Go dashboard, PDF generation, batch processing. Adapting patterns for job market analytics.</p>
+          <div class="tags"><span>Go</span><span>AI</span><span>PDF</span><span>CLI</span></div>
+          <div class="meta">Updated Apr 2026 · Fork</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/claude-resume-kit" target="_blank" rel="noopener" class="repo-item fade-up" data-category="fork">
+        <span class="num">22</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>claude-resume-kit</h3>
+            <span class="badge badge-fork">Fork</span>
+          </div>
+          <p>Extract papers once, generate tailored LaTeX resumes per JD. Anti-fabrication controls, multi-perspective critique, AI fingerprint avoidance.</p>
+          <div class="tags"><span>LaTeX</span><span>AI</span><span>Resume</span></div>
+          <div class="meta">Updated Mar 2026 · Fork</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/SagarMarthandan/llms_ai_agents_ashok" target="_blank" rel="noopener" class="repo-item fade-up" data-category="fork">
+        <span class="num">23</span>
+        <div class="content">
+          <div class="top-row">
+            <h3>LLMs to AI Agents</h3>
+            <span class="badge badge-fork">Fork</span>
+          </div>
+          <p>OpenCampus course — from foundational LLMs to agentic AI workflows. Agent patterns, tool use, memory, RAG.</p>
+          <div class="tags"><span>AI Agents</span><span>LLM</span><span>Python</span></div>
+          <div class="meta">Updated May 2026 · Fork</div>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Filter repos by category
+const filters = document.querySelectorAll('#filters button');
+const items = document.querySelectorAll('.repo-item');
+
+filters.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filters.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.filter;
+    items.forEach(item => {
+      if (cat === 'all') {
+        item.style.display = '';
+        return;
+      }
+      const cats = item.dataset.category;
+      item.style.display = cats && cats.split(',').includes(cat) ? '' : 'none';
+    });
+  });
+});
+
+// Theme toggle
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>

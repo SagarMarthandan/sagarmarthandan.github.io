@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algorithmic Monoculture and Why I Built OKF-CV — Sagar Marthandan</title>
+<meta name="description" content="How a Stanford study on algorithmic monoculture in hiring shaped the design of my ATS-optimized resume pipeline.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+img { max-width: 100%; height: auto; display: block; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
+.nav-brand span { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; }
+.nav-brand:hover span { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s; }
+.nav-links a:hover { color: var(--color-text); }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.post-header {
+  padding: 5rem 0 0;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header { padding: 6rem 0 0; } }
+.post-header .pre-title {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+.post-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header h1 { font-size: 3.25rem; } }
+.post-header .meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.post-body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+.post-body h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 2.5rem 0 1rem;
+  font-weight: 400;
+}
+.post-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 2rem 0 0.75rem;
+}
+.post-body p { margin-bottom: 1.25rem; }
+.post-body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.post-body a:hover { text-decoration-thickness: 2px; }
+.post-body blockquote {
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+.post-body ul, .post-body ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
+.post-body li { margin-bottom: 0.5rem; }
+.post-body strong { color: var(--color-text); font-weight: 600; }
+.post-body .callout {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.post-body .callout strong { color: var(--color-accent); }
+.post-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+  margin-bottom: 2rem;
+}
+.back-link:hover { color: var(--color-accent); }
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { opacity: 0; transform: translateY(12px); animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <div class="avatar">SM</div>
+    <span>Sagar</span>
+  </a>
+  <div class="nav-links">
+    <a href="/repos.html">repos</a>
+    <a href="/resume.html">resume</a>
+    <a href="/contact.html">contact</a>
+    <a href="/blog.html">blog</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <article>
+    <div class="post-header fade-up">
+      <a href="/blog.html" class="back-link">← Back to blog</a>
+      <p class="pre-title">Research · Engineering · Hiring</p>
+      <h1>Algorithmic Monoculture and Why I Built OKF-CV</h1>
+      <div class="meta">
+        <span>July 15, 2026</span>
+        <span>·</span>
+        <span>7 min read</span>
+      </div>
+    </div>
+
+    <div class="post-body fade-up">
+      <p>A few weeks ago, <a href="https://digitaleconomy.stanford.edu/news/qa-algorithmic-monoculture/" target="_blank">a Stanford study</a> dropped that confirmed something job seekers have suspected for years: when the same algorithms screen applicants across different companies, the same people get rejected everywhere. The researchers call it <em>algorithmic monoculture</em> — and their findings are stark.</p>
+
+      <p>Drawing on 4 million applications screened by the hiring vendor pymetrics, the study found that 10% of applicants who applied to four different positions were rejected by <em>every single one</em>. Not because they were unqualified — but because the same underlying algorithm produced the same outcome across firms. Worse, the analysis found clear racial disparities: Black and Asian applicants were disproportionately screened out, even though the games used to evaluate them never asked for race, gender, or age.</p>
+
+      <p>This isn't abstract for me. As someone actively job-hunting in the German market — where ATS systems from Workday, SuccessFactors, and Personio are ubiquitous — I see the effects firsthand. And it's what drove me to build <strong>OKF-CV</strong>.</p>
+
+      <hr>
+
+      <h2>The Problem: One Algorithm, Many Employers</h2>
+
+      <p>Here's the core finding that matters for job seekers:</p>
+
+      <blockquote>
+        "The World Economic Forum claims more than 90% of employers use automated systems to filter or rank job applications."
+        <br>— Rishi Bommasani, Stanford study co-author
+      </blockquote>
+
+      <p>The study examined 42 different hiring models across firms. When they checked for homogenization — the probability that an applicant would be systemically rejected by every position they applied for — the numbers diverged sharply from what independent hiring decisions would predict. The same applicants hit the same wall, repeatedly.</p>
+
+      <p>Sarah Bana, one of the researchers, put it bluntly: "You need to apply to more jobs than ever before — and apply widely. Some employers use the same processes (sometimes literally the same vendor), so submitting more applications through identical pipelines won't generate new evaluations."</p>
+
+      <p>This is the trap. If you send the same resume to 50 companies and 40 of them use variants of the same scoring model, you're not getting 50 independent evaluations. You're getting 50 slightly different views of the same judgment.</p>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 1 — Algorithmic Monoculture vs OKF-CV Approach</div>
+        <svg viewBox="0 0 720 280" style="width:100%;height:auto;max-width:720px;display:block;margin:0 auto;">
+          <!-- Problem side -->
+          <rect x="10" y="10" width="330" height="260" rx="12" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+          <text x="175" y="35" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="currentColor" font-weight="600" opacity="0.7">PROBLEM</text>
+
+          <!-- Resume block -->
+          <rect x="45" y="55" width="90" height="36" rx="6" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="90" y="77" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="currentColor" opacity="0.8">Your Resume</text>
+
+          <!-- Arrow down -->
+          <line x1="90" y1="91" x2="90" y2="108" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrowD)"/>
+
+          <!-- Three ATS boxes -->
+          <rect x="25" y="110" width="130" height="30" rx="5" fill="none" stroke="#a855f7" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="90" y="129" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#a855f7" opacity="0.8">Workday</text>
+
+          <rect x="25" y="145" width="130" height="30" rx="5" fill="none" stroke="#a855f7" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="90" y="164" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#a855f7" opacity="0.8">SuccessFactors</text>
+
+          <rect x="25" y="180" width="130" height="30" rx="5" fill="none" stroke="#a855f7" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="90" y="199" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#a855f7" opacity="0.8">Personio</text>
+
+          <!-- Shared vendor label -->
+          <text x="90" y="235" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#a855f7" opacity="0.6">⬆ same shared model ⬇</text>
+
+          <!-- Cross to rejection -->
+          <line x1="25" y1="130" x2="25" y2="145" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+          <line x1="155" y1="130" x2="155" y2="145" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+          <line x1="25" y1="175" x2="25" y2="180" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+          <line x1="155" y1="175" x2="155" y2="180" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+
+          <!-- Rejected outcome -->
+          <rect x="35" y="245" width="110" height="20" rx="4" fill="none" stroke="#ef4444" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="90" y="259" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#ef4444" opacity="0.8">❌ Rejected everywhere</text>
+
+          <!-- Divider -->
+          <line x1="355" y1="20" x2="355" y2="260" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+
+          <!-- Solution side -->
+          <rect x="380" y="10" width="330" height="260" rx="12" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+          <text x="545" y="35" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="currentColor" font-weight="600" opacity="0.7">OKF-CV SOLUTION</text>
+
+          <rect x="425" y="55" width="90" height="36" rx="6" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="470" y="77" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="currentColor" opacity="0.8">OKF-CV Engine</text>
+
+          <line x1="470" y1="91" x2="470" y2="110" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+          <line x1="470" y1="110" x2="470" y2="115" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+
+          <!-- Version boxes -->
+          <rect x="395" y="120" width="150" height="28" rx="5" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="470" y="138" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" opacity="0.8">Resume v1 — Workday-optimized</text>
+
+          <rect x="395" y="155" width="150" height="28" rx="5" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="470" y="173" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" opacity="0.8">Resume v2 — SF-optimized</text>
+
+          <rect x="395" y="190" width="150" height="28" rx="5" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="470" y="208" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" opacity="0.8">Resume v3 — Personio-optimized</text>
+
+          <text x="470" y="252" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" opacity="0.8">✅ At least one gets through</text>
+
+          <defs>
+            <marker id="arrowD" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h2>How ATS Systems Actually Work</h2>
+
+      <p>Most modern ATS systems don't just keyword-match. They use ML models trained on each firm's existing workforce to score candidates on "fit." The pymetrics system the Stanford study analyzed is particularly interesting — instead of parsing resumes, it has candidates play neuroscience-based games designed to surface personality traits through behavior rather than self-report.</p>
+
+      <p>But as the study shows, behavior encodes identity. One researcher noted: "a friend recently pointed out that risk aversion looks very different for someone at the poverty line than it does for someone who has never missed a meal." The games surface traits correlated with race and class, and the models built on top of those traits reproduce the disparities.</p>
+
+      <p>The systems I encounter daily in the German market — Workday, SuccessFactors (SAP), Personio — operate on similar principles beneath their different UIs. They parse, score, rank. And once you understand that, you realize the correct strategy isn't to game a single system. It's to diversify.</p>
+
+      <hr>
+
+      <h2>Why OKF-CV Exists</h2>
+
+      <p>OKF-CV — my ATS-optimized resume pipeline — was designed specifically to counteract algorithmic monoculture. The name stands for <strong>Open Knowledge Format</strong>: the idea that your candidacy should be expressible in multiple forms, not locked into one vendor's scoring model.</p>
+
+      <p>Here's how it works, mapped to the problem:</p>
+
+      <h3>1. Per-Job Optimization, Not One-Size-Fits-All</h3>
+      <p>When you submit the same resume everywhere, you're giving every ATS the same signal. OKF-CV generates a <em>tailored</em> resume for each job description. The pipeline starts with an ATS analysis step that scores your existing resume against the target JD using a strict 0-100 matrix. If the score falls below 85%, the system pauses and presents an interactive terminal — asking you to choose between rewrite strategies (A/B/C) before proceeding.</p>
+
+      <h3>2. Hybrid Semantic Search, Not Just Keywords</h3>
+      <p>Traditional keyword matching is brittle. OKF-CV uses a hybrid approach: OKF phrase matching catches exact requirements, while Zvec semantic embeddings understand <em>meaning</em>. A JD asking for "dimensional modeling" will match your experience with "star schema" even if you used different terminology. This means your resume is discoverable by a wider range of ATS models — directly addressing the homogenization problem.</p>
+
+      <h3>3. Self-Learning Keyword Enrichment</h3>
+      <p>The pipeline continuously learns which keywords and phrases correlate with higher ATS scores. Each run enriches the knowledge base, making future optimizations smarter. Over time, the system builds a map of what different ATS vendors prioritize — Workday's weighting of certifications vs. SuccessFactors' emphasis on project outcomes.</p>
+
+      <h3>4. ATS-Specific Calibration</h3>
+      <p>The pipeline is explicitly calibrated for the DACH region's dominant ATS platforms — Workday, SuccessFactors, and Personio — which have different parsing behaviors. Workday, for instance, heavily weights standardized section headers and date formats. Personio scans for role-specific skill tags. The OKF-CV pipeline adjusts LaTeX output for each target, rather than hoping a single format works everywhere.</p>
+
+      <div class="callout">
+        <strong>The key insight:</strong> If 90% of employers use ATS systems, and many of those systems share algorithmic foundations, then the winning strategy isn't to optimize for one system. It's to produce versions of your resume optimized for <em>different</em> systems, increasing the probability that <em>some</em> of your applications get through.
+      </div>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 2 — OKF-CV 6-Stage Pipeline</div>
+        <svg viewBox="0 0 700 220" style="width:100%;height:auto;max-width:700px;display:block;margin:0 auto;">
+          <!-- Connector arrows -->
+          <line x1="105" y1="55" x2="195" y2="55" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+          <line x1="290" y1="55" x2="380" y2="55" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+          <line x1="475" y1="55" x2="565" y2="55" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+
+          <!-- Row 1: Stages 1-4 -->
+          <!-- Stage 1: ATS Analysis -->
+          <rect x="10" y="30" width="95" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="57" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">ATS Analysis</text>
+          <text x="57" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Score 0-100</text>
+
+          <!-- Decision diamond -->
+          <polygon points="195,55 220,30 245,55 220,80" fill="none" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.6"/>
+          <text x="220" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#f59e0b" opacity="0.8">&lt;85%?</text>
+          <text x="220" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" fill="#f59e0b" opacity="0.6">A/B/C?</text>
+
+          <!-- Stage 2: Rewrite -->
+          <rect x="290" y="30" width="90" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="335" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Resume</text>
+          <text x="335" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Rewrite</text>
+
+          <!-- Stage 3: Cover Letter -->
+          <rect x="475" y="30" width="90" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="520" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Cover</text>
+          <text x="520" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Letter</text>
+
+          <!-- Stage 4: PDF -->
+          <rect x="595" y="30" width="95" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="642" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">PDF</text>
+          <text x="642" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Compile</text>
+
+          <!-- Down arrow to row 2 -->
+          <line x1="642" y1="80" x2="642" y2="105" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+
+          <!-- Row 2: Stages 5-6 -->
+          <line x1="642" y1="130" x2="430" y2="130" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+
+          <!-- Stage 5: Archive -->
+          <rect x="335" y="115" width="95" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="382" y="137" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">JD Archive</text>
+          <text x="382" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Clean + Store</text>
+
+          <!-- Stage 6: Audit -->
+          <rect x="200" y="115" width="95" height="50" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="247" y="137" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Eye Test</text>
+          <text x="247" y="152" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" opacity="0.8" font-weight="600">Audit</text>
+
+          <!-- End result -->
+          <line x1="200" y1="140" x2="130" y2="140" stroke="currentColor" stroke-width="1.5" opacity="0.25" marker-end="url(#arr2)"/>
+          <rect x="30" y="120" width="100" height="40" rx="6" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="80" y="145" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" opacity="0.8">✅ Resume v2</text>
+
+          <!-- Decision branch label -->
+          <text x="220" y="100" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#f59e0b" opacity="0.5">⬅ OK ⬆</text>
+
+          <defs>
+            <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h2>The Pipeline in Practice</h2>
+
+      <p>The full OKF-CV pipeline runs in six stages, each designed to counter a specific aspect of algorithmic screening:</p>
+
+      <ol>
+        <li><strong>ATS Analysis & Gap Detection</strong> — Scores your resume against the JD, identifying specific gaps and recommending project swaps from your portfolio.</li>
+        <li><strong>Resume Rewrite</strong> — Rewrites the resume targeting the JD's specific ATS system, adjusting structure, terminology, and emphasis.</li>
+        <li><strong>Cover Letter Generation</strong> — Generates a tailored cover letter following German <em>Geschäftsbrief</em> standards, grounded in metrics-driven evidence.</li>
+        <li><strong>PDF Compilation</strong> — Multi-pass pdflatex rendering with character escaping, producing a clean, parseable PDF that ATS systems can actually read (many fail on poorly-encoded PDFs).</li>
+        <li><strong>Job Description Archival</strong> — Archives clean, structured JDs for reference and offline analysis.</li>
+        <li><strong>Visual Layout & Eye Test Audit</strong> — Simulates a recruiter's 6-second scan, checking for orphaned headers, bullet density, and layout issues that cause ATS parsing failures.</li>
+      </ol>
+
+      <p>Step 6 is particularly relevant to the monoculture problem. The audit evaluates six layout metrics and can generate an alternate <em>v2</em> PDF if the layout fails the scan test — giving you a second version optimized for a different ATS parser's quirks.</p>
+
+      <hr>
+
+      <h2>What the Stanford Study Means for Job Seekers</h2>
+
+      <p>Sarah Bana's advice to job seekers is worth reading in full:</p>
+
+      <blockquote>
+        "Build demonstrable experience. Lean on weak ties. Stay flexible. Build a routine."
+      </blockquote>
+
+      <p>I'd add a fifth point, informed by engineering the other side of the equation: <strong>know your ATS stack.</strong> The researchers found that applicants who understand which systems their target employers use can adjust their strategy. A resume optimized for Workday looks different from one optimized for Personio. Treating them interchangeably is leaving points on the board.</p>
+
+      <p>The Stanford team's broader recommendation — that AI vendors should measure adverse impact per model, and employers should request this data when procuring tools — is the right systemic fix. But systemic change is slow. While we wait for it, the practical response is to build tools that give individual candidates more leverage.</p>
+
+      <p>That's what OKF-CV is. Not a magic bullet — hiring is still a human process mediated by humans on both sides — but a systematic attempt to level a playing field that, as the study shows, is tilted in ways most candidates can't see.</p>
+
+      <hr>
+
+      <p style="font-size:0.875rem;color:var(--color-text-muted);">
+        <em>References:</em><br>
+        Bommasani, R., Bana, S., Creel, K.A., Jurafsky, D., & Liang, P. (2026). 
+        <a href="https://digitaleconomy.stanford.edu/publication/algorithmic-monocultures-in-hiring/" target="_blank">Algorithmic Monocultures in Hiring</a>. Stanford Digital Economy Lab.<br>
+        <a href="https://digitaleconomy.stanford.edu/news/qa-algorithmic-monoculture/" target="_blank">Q&A: Algorithmic Monoculture in Hiring</a> — Stanford Digital Economy Lab, May 28, 2026.
+      </p>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>

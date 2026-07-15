@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Blog — Sagar Marthandan</title>
-<meta name="description" content="Writing about data engineering, analytics engineering, and building data platforms.">
+<title>Contact — Sagar Marthandan</title>
+<meta name="description" content="Get in touch with Sagar Marthandan — data and analytics engineer based in Berlin.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,13 +54,11 @@ nav {
 .nav-brand .avatar { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }
 .nav-brand span { font-size: 0.875rem; font-weight: 600; transition: opacity 0.2s; }
 .nav-brand:hover span { opacity: 0.7; }
-.nav-links { display: flex; align-items: center; gap: 1.25rem; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; }
 @media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
 .nav-links a { font-size: 0.875rem; color: var(--color-text-secondary); transition: color 0.2s; }
 .nav-links a:hover { color: var(--color-text); }
 .nav-links a.active { color: var(--color-text); font-weight: 500; }
-.nav-links .desktop-only { display: none; }
-@media (min-width: 40rem) { .nav-links .desktop-only { display: inline; } }
 .theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
 .theme-toggle:hover { opacity: 0.7; }
 main { flex: 1; }
@@ -71,13 +69,129 @@ main { flex: 1; }
 @media (min-width: 40rem) { .page-header h1 { font-size: 3.75rem; } }
 @media (min-width: 48rem) { .page-header h1 { font-size: 4.5rem; } }
 .page-header h1 .display-italic { font-style: italic; color: var(--color-text-secondary); }
+.page-header .subtitle { color: var(--color-text-secondary); max-width: 36rem; margin-top: 1.5rem; line-height: 1.625; }
 .page-divider { width: 100%; height: 1px; background: var(--color-border); margin: 3rem 0; }
-.blog-list { padding-bottom: 5rem; }
-.blog-list .empty-state { display: grid; grid-template-columns: 1fr; gap: 2rem; }
-@media (min-width: 48rem) { .blog-list .empty-state { grid-template-columns: 1fr 2fr; gap: 3.5rem; } }
-.blog-list .empty-state .lead { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.25; color: var(--color-text-secondary); }
-.blog-list .empty-state .lead .display-italic { font-style: italic; }
-.blog-list .empty-state .body { color: var(--color-text-secondary); line-height: 1.625; max-width: 65ch; }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+.section-header .num { font-family: var(--font-display); font-size: 1.875rem; color: var(--color-text-muted); line-height: 1; }
+.section-header h2 { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--color-text-muted); font-weight: 400; }
+.section-header .line { flex: 1; height: 1px; background: var(--color-border); translate: 0 -4px; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 48rem) {
+  .contact-grid { grid-template-columns: 1fr 1fr; gap: 4rem; }
+}
+
+.contact-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+.contact-item:hover { border-color: var(--color-accent); }
+.contact-item .icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+.contact-item .details h3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.125rem;
+}
+.contact-item .details a, .contact-item .details span {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+}
+.contact-item .details a:hover { color: var(--color-accent); }
+
+.social-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+.social-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+.social-card:hover { border-color: var(--color-accent); }
+.social-card .platform {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.social-card .handle {
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+.social-card .handle .arrow {
+  font-size: 0.75rem;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+.social-card:hover .handle .arrow { transform: translate(2px, -2px); }
+
+.availability-card {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.availability-card .dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-green-dot);
+  flex-shrink: 0;
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.4); }
+}
+.availability-card .status {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--color-green-dot);
+  font-weight: 500;
+}
+.availability-card .detail {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
 footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
 .footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
 .footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
@@ -112,34 +226,84 @@ footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrin
   <div class="nav-links">
     <a href="/repos.html">repos</a>
     <a href="/resume.html">resume</a>
-    <a href="/contact.html">contact</a>
-    <a href="/blog.html" class="active">blog</a>
+    <a href="/contact.html" class="active">contact</a>
+    <a href="/blog.html">blog</a>
     <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
   </div>
 </nav>
 
 <main id="main">
   <div class="container page-header">
-    <p class="pre-title fade-up delay-1">Writing · Essays · Notes</p>
-    <h1 class="fade-up delay-2">The <span class="display-italic">Blog</span></h1>
+    <p class="pre-title fade-up delay-1">Get in Touch</p>
+    <h1 class="fade-up delay-2"><span class="display-italic">Contact</span></h1>
+    <p class="subtitle fade-up delay-3">I'm always open to interesting conversations, collaboration opportunities, and new challenges in data engineering and analytics.</p>
   </div>
 
   <div class="container page-divider"></div>
 
-  <div class="blog-list">
-    <a href="/blog/algorithmic-monoculture-and-okf-cv.html" style="display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;padding:1.5rem 0;border-bottom:1px solid var(--color-border);transition:all 0.2s;text-decoration:none;color:inherit;">
-      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--color-text-muted);padding-top:0.25rem;white-space:nowrap;">Jul 15</span>
-      <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;line-height:1.2;color:var(--color-text);transition:color 0.2s;margin-bottom:0.375rem;">Algorithmic Monoculture and Why I Built OKF-CV</h2>
-        <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:0.5rem;">How a Stanford study on algorithmic monoculture in hiring shaped the design of my ATS-optimized resume pipeline — hybrid OKF phrase matching, Zvec semantic embeddings, and per-system calibration against Workday, SuccessFactors, and Personio.</p>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-          <span style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.125rem 0.375rem;border-radius:0.25rem;background:rgba(96,165,250,0.1);color:var(--color-accent);border:1px solid rgba(96,165,250,0.2);">Research</span>
-          <span style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.125rem 0.375rem;border-radius:0.25rem;background:rgba(96,165,250,0.1);color:var(--color-accent);border:1px solid rgba(96,165,250,0.2);">Engineering</span>
-          <span style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.05em;text-transform:uppercase;padding:0.125rem 0.375rem;border-radius:0.25rem;background:rgba(96,165,250,0.1);color:var(--color-accent);border:1px solid rgba(96,165,250,0.2);">Hiring</span>
+  <div class="container contact-grid">
+    <!-- Contact details -->
+    <div class="contact-list fade-up">
+      <div class="contact-item">
+        <div class="icon">📧</div>
+        <div class="details">
+          <h3>Email</h3>
+          <a href="mailto:sagar.marthandan@yahoo.com">sagar.marthandan@yahoo.com</a>
         </div>
       </div>
-      <span style="color:var(--color-text-muted);font-size:1.125rem;padding-top:0.25rem;">↗</span>
-    </a>
+
+      <div class="contact-item">
+        <div class="icon">📱</div>
+        <div class="details">
+          <h3>Phone</h3>
+          <span>+49 176 74138359</span>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="icon">📍</div>
+        <div class="details">
+          <h3>Location</h3>
+          <span>Kiel, Germany (Open to Berlin / Remote / Hybrid)</span>
+        </div>
+      </div>
+
+      <div class="contact-item">
+        <div class="icon">🛂</div>
+        <div class="details">
+          <h3>Work Authorization</h3>
+          <span>EU Blue Card holder · Immediately available for Working Student, Intern, or Entry-Level roles</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social / Quick links -->
+    <div class="fade-up">
+      <div class="social-grid">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" class="social-card">
+          <span class="platform">GitHub</span>
+          <span class="handle">/SagarMarthandan <span class="arrow">↗</span></span>
+        </a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" class="social-card">
+          <span class="platform">LinkedIn</span>
+          <span class="handle">in/sagarmarthandan <span class="arrow">↗</span></span>
+        </a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" class="social-card">
+          <span class="platform">X (Twitter)</span>
+          <span class="handle">@sagarmarthandan <span class="arrow">↗</span></span>
+        </a>
+        <a href="https://github.com/SagarMarthandan/yaml-cv-pipeline" target="_blank" rel="noopener" class="social-card">
+          <span class="platform">Resume PDF</span>
+          <span class="handle">Download CV <span class="arrow">↗</span></span>
+        </a>
+      </div>
+
+      <div class="availability-card">
+        <span class="dot"></span>
+        <span class="status">Open to opportunities</span>
+        <span class="detail">— Working Student / Intern / Entry-Level roles in Data Engineering & Analytics Engineering</span>
+      </div>
+    </div>
   </div>
 </main>
 
