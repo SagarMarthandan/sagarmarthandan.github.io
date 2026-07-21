@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From API to Dashboard: Building an End-to-End YouTube Data Pipeline — Sagar Marthandan</title>
+<meta name="description" content="A detailed look at an end-to-end containerized ELT pipeline orchestrating YouTube channel analytics through layered PostgreSQL schemas using Apache Airflow and Soda Core.">
+<meta property="og:title" content="From API to Dashboard: Building an End-to-End YouTube Data Pipeline">
+<meta property="og:description" content="A detailed look at an end-to-end containerized ELT pipeline orchestrating YouTube channel analytics through layered PostgreSQL schemas using Apache Airflow and Soda Core.">
+<meta property="og:url" content="https://sagarmarthandan.github.io/blog/youtube-end-to-end-data-pipeline.html">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://sagarmarthandan.github.io/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sagar Marthandan — Data Analytics Engineer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="From API to Dashboard: Building an End-to-End YouTube Data Pipeline">
+<meta name="twitter:image" content="https://sagarmarthandan.github.io/images/og-image.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='68' text-anchor='middle' font-family='JetBrains Mono,monospace' font-size='42' font-weight='700' fill='%2360a5fa'>SM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+img { max-width: 100%; height: auto; display: block; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .brand-name { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.1; color: var(--color-text); letter-spacing: -0.01em; transition: opacity 0.2s; }
+.nav-brand:hover .brand-name { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 1.125rem; color: var(--color-text-secondary); transition: color 0.2s; font-family: var(--font-display); }
+.nav-links a:hover { color: var(--color-text); }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.post-header {
+  padding: 5rem 0 0;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header { padding: 6rem 0 0; } }
+.post-header .pre-title {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+.post-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header h1 { font-size: 3.25rem; } }
+.post-header .meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.post-body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+.post-body h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 2.5rem 0 1rem;
+  font-weight: 400;
+}
+.post-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 2rem 0 0.75rem;
+}
+.post-body p { margin-bottom: 1.25rem; }
+.post-body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.post-body a:hover { text-decoration-thickness: 2px; }
+.post-body blockquote {
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+.post-body ul, .post-body ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
+.post-body li { margin-bottom: 0.5rem; }
+.post-body strong { color: var(--color-text); font-weight: 600; }
+.post-body .callout {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.post-body .callout strong { color: var(--color-accent); }
+.post-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+  margin-bottom: 2rem;
+}
+.back-link:hover { color: var(--color-accent); }
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <span class="brand-name">Sagar Marthandan</span>
+  </a>
+  <div class="nav-links">
+    <a href="/">home</a>
+    <a href="/repos.html">repos</a>
+    <a href="/resume.html">resume</a>
+    <a href="/contact.html">contact</a>
+    <a href="/blog.html">blog</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <article>
+    <div class="post-header fade-up">
+      <a href="/blog.html" class="back-link">← Back to blog</a>
+      <p class="pre-title">Data Engineering · Airflow · PostgreSQL</p>
+      <h1>From API to Dashboard: Building an End-to-End YouTube Data Pipeline</h1>
+      <div class="meta">
+        <span>July 1, 2026</span>
+        <span>·</span>
+        <span>7 min read</span>
+        <span>·</span>
+        <span>Data Engineering, Airflow, PostgreSQL</span>
+      </div>
+    </div>
+
+    <div class="post-body fade-up">
+      <p>In content creation and digital marketing, visibility is everything. However, relying on default platform analytics dashboards limits the depth of insights. To truly understand audience growth, content performance, and engagement trends over time, you need programmatic access to the underlying data. That realization is what drove me to build a containerized ELT (Extract, Load, Transform) data pipeline designed to ingest, process, and analyze YouTube channel metrics at scale.</p>
+
+      <p>Using the official YouTube Data API (v3) as a source, the platform orchestrates extraction tasks through Apache Airflow, stores and models the records inside PostgreSQL using layered schemas, ensures data quality via Soda Core validation tests, and is packaged cleanly using Docker Compose. Finally, a robust GitHub Actions CI/CD workflow manages testing and deployment. Here is a deep dive into the architecture, challenges, and implementation details of the pipeline.</p>
+
+      <hr>
+
+      <h2>The Architecture: Designing a Layered ELT Pipeline</h2>
+
+      <p>Rather than building a brittle script that pulls data and maps it straight to a single dashboard, this project implements a structured ELT architecture. This keeps extraction lightweight, preserves historical data, and builds staging and analytics marts on a schedule.</p>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 1 — End-to-End Data Flow Architecture</div>
+        <svg viewBox="0 0 720 280" style="width:100%;height:auto;max-width:720px;display:block;margin:0 auto;">
+          <!-- Sources -->
+          <rect x="15" y="60" width="110" height="50" rx="6" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="70" y="85" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="currentColor" font-weight="600" opacity="0.8">YouTube API</text>
+          <text x="70" y="98" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.5">JSON Payload</text>
+
+          <!-- Orchestrator (Airflow) -->
+          <rect x="180" y="30" width="130" height="110" rx="8" fill="none" stroke="#e11d48" stroke-width="1.5" opacity="0.6"/>
+          <text x="245" y="50" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#e11d48" font-weight="600">Apache Airflow</text>
+          <rect x="195" y="65" width="100" height="24" rx="4" fill="currentColor" opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="245" y="80" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor">1. Extractor Task</text>
+          <rect x="195" y="95" width="100" height="24" rx="4" fill="currentColor" opacity="0.05" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="245" y="110" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor">2. Loader Task</text>
+
+          <!-- Database Layers -->
+          <rect x="360" y="15" width="190" height="240" rx="8" fill="none" stroke="var(--color-accent)" stroke-width="1.5" opacity="0.6"/>
+          <text x="455" y="35" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="var(--color-accent)" font-weight="600">PostgreSQL (Layered)</text>
+
+          <!-- Bronze/Raw -->
+          <rect x="375" y="55" width="160" height="45" rx="5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="455" y="75" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" font-weight="600" opacity="0.8">Raw Schema (Bronze)</text>
+          <text x="455" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.5">Appended JSON dumps</text>
+
+          <!-- Silver/Staging -->
+          <rect x="375" y="115" width="160" height="45" rx="5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="455" y="135" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" font-weight="600" opacity="0.8">Staging Schema (Silver)</text>
+          <text x="455" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.5">Deduplicated & Cleaned</text>
+
+          <!-- Gold/Marts -->
+          <rect x="375" y="175" width="160" height="45" rx="5" fill="none" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="455" y="195" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" font-weight="600" opacity="0.8">Marts Schema (Gold)</text>
+          <text x="455" y="208" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.5">Business KPIs & Dimensions</text>
+
+          <!-- Dashboards -->
+          <rect x="590" y="110" width="110" height="50" rx="6" fill="currentColor" opacity="0.08" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="645" y="135" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="currentColor" font-weight="600" opacity="0.8">BI Dashboard</text>
+          <text x="645" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.5">Streamlit / Metabase</text>
+
+          <!-- Flows -->
+          <line x1="125" y1="85" x2="172" y2="85" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrow)"/>
+          <line x1="310" y1="85" x2="352" y2="85" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrow)"/>
+          <line x1="550" y1="135" x2="582" y2="135" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrow)"/>
+
+          <!-- Internal Database Flow Arrows -->
+          <line x1="455" y1="100" x2="455" y2="110" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,2" opacity="0.4" marker-end="url(#arrow)"/>
+          <line x1="455" y1="160" x2="455" y2="170" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,2" opacity="0.4" marker-end="url(#arrow)"/>
+
+          <!-- Soda Core Testing Annotation -->
+          <rect x="230" y="195" width="100" height="40" rx="5" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.7"/>
+          <text x="280" y="212" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#10b981" font-weight="600">Soda Core Checks</text>
+          <text x="280" y="225" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#10b981" opacity="0.8">Data Quality Gate</text>
+          
+          <line x1="330" y1="215" x2="370" y2="215" stroke="#10b981" stroke-width="1" stroke-dasharray="2,2" opacity="0.6"/>
+
+          <defs>
+            <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <p>As illustrated in the diagram, the data flow progresses from left to right. The YouTube API serves raw JSON payloads representing video analytics, play statistics, comments, and channel updates. These are pulled by Airflow Tasks and loaded directly into PostgreSQL's RAW schema (equivalent to the Bronze layer). From there, SQL transformations structure the data into the STAGING (Silver) and MARTS (Gold) schemas. Quality verification is managed at boundaries using Soda Core check constraints.</p>
+
+      <hr>
+
+      <h2>Airflow Orchestration: Scheduling and DAG Design</h2>
+
+      <p>Apache Airflow is the backbone of this pipeline, responsible for managing task dependencies, handles API rate limits with retry mechanisms, and logs errors cleanly. Rather than deploying a single, monolith DAG, the workflow is split logically to enable granular execution schedules:</p>
+
+      <ul>
+        <li><strong>Daily Video Metrics DAG:</strong> Runs daily at midnight to capture fast-moving statistics like view count, likes, comment count, and share parameters.</li>
+        <li><strong>Weekly Channel & Comments DAG:</strong> Runs every Monday to update broad channel status profiles, subscriber growth trends, and fetch high-volume historical comment threads.</li>
+      </ul>
+
+      <p>A typical execution graph involves extracting data from the YouTube API, storing it temporarily as flat Parquet files to prevent memory issues, importing those files into PostgreSQL, running data quality tests, and then triggering the SQL models that refresh down-stream tables.</p>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 2 — Airflow Task Dependencies</div>
+        <svg viewBox="0 0 700 180" style="width:100%;height:auto;max-width:700px;display:block;margin:0 auto;">
+          <!-- Nodes -->
+          <!-- extract_raw -->
+          <rect x="15" y="65" width="100" height="40" rx="5" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="65" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="currentColor">extract_raw</text>
+          <text x="65" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">API Extraction</text>
+
+          <!-- load_raw -->
+          <rect x="155" y="65" width="100" height="40" rx="5" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="205" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="currentColor">load_raw</text>
+          <text x="205" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">PostgreSQL Copy</text>
+
+          <!-- quality_check_raw -->
+          <rect x="295" y="65" width="115" height="40" rx="5" fill="none" stroke="#10b981" stroke-width="1" stroke-opacity="0.5"/>
+          <text x="352" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="#10b981">check_raw_soda</text>
+          <text x="352" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#10b981" opacity="0.7">Soda Validation</text>
+
+          <!-- transform_staging -->
+          <rect x="450" y="65" width="105" height="40" rx="5" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="502" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="currentColor">transform_stage</text>
+          <text x="502" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">SQL Transformations</text>
+
+          <!-- transform_marts -->
+          <rect x="585" y="65" width="100" height="40" rx="5" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.3"/>
+          <text x="635" y="85" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8" fill="currentColor">generate_marts</text>
+          <text x="635" y="97" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Gold Layer Views</text>
+
+          <!-- Connectors -->
+          <line x1="115" y1="85" x2="147" y2="85" stroke="currentColor" stroke-width="1.2" opacity="0.3" marker-end="url(#arr3)"/>
+          <line x1="255" y1="85" x2="287" y2="85" stroke="currentColor" stroke-width="1.2" opacity="0.3" marker-end="url(#arr3)"/>
+          <line x1="410" y1="85" x2="442" y2="85" stroke="currentColor" stroke-width="1.2" opacity="0.3" marker-end="url(#arr3)"/>
+          <line x1="555" y1="85" x2="577" y2="85" stroke="currentColor" stroke-width="1.2" opacity="0.3" marker-end="url(#arr3)"/>
+
+          <defs>
+            <marker id="arr3" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto">
+              <path d="M0,0 L5,2.5 L0,5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <p>By enforcing the Soda validation step <code>check_raw_soda</code> before running the SQL queries (<code>transform_stage</code>), the pipeline acts as a self-healing system. If an upstream API payload format changes unexpectedly (e.g. YouTube deprecating a field or returning null values), the DAG halts execution immediately, avoiding downstream corruption.</p>
+
+      <hr>
+
+      <h2>PostgreSQL Schema Layering: Bronze, Silver, and Gold in Postgres</h2>
+
+      <p>While Snowflake and Databricks dominate enterprise data warehousing, you can build a highly effective, low-cost structured warehouse architecture directly in a single PostgreSQL instance using logical schemas. In this pipeline, the layers are structured as follows:</p>
+
+      <h3>1. Raw Schema (Bronze)</h3>
+      <p>This layer holds the incoming JSON documents exactly as fetched from the YouTube Data API. We use Postgres's native <code>JSONB</code> data type to store the raw payload along with some metadata columns:</p>
+
+<pre style="margin:1rem 0;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;font-family:var(--font-mono);font-size:0.875rem;"><code>CREATE TABLE raw.youtube_videos (
+    id SERIAL PRIMARY KEY,
+    video_id VARCHAR(50) NOT NULL,
+    raw_payload JSONB NOT NULL,
+    extracted_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+      <h3>2. Staging Schema (Silver)</h3>
+      <p>The staging schema parses the raw JSON payloads into clean, tabular formats. It handles data type casting, converts timestamps, flattens arrays, and deduplicates the records. We implement this using a combination of SQL views and physical tables populated through incremental insertions:</p>
+
+<pre style="margin:1rem 0;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;font-family:var(--font-mono);font-size:0.875rem;"><code>CREATE TABLE staging.stg_videos AS
+SELECT 
+    video_id,
+    (raw_payload->'snippet'->>'title')::TEXT as title,
+    (raw_payload->'snippet'->>'publishedAt')::TIMESTAMP WITH TIME ZONE as published_at,
+    (raw_payload->'statistics'->>'viewCount')::BIGINT as view_count,
+    (raw_payload->'statistics'->>'likeCount')::BIGINT as like_count,
+    extracted_at
+FROM raw.youtube_videos;</code></pre>
+
+      <h3>3. Marts Schema (Gold)</h3>
+      <p>Finally, the marts schema models business metrics. Here, facts and dimensions are modeled to support fast dashboards. Dimensions are slowly changing (like channel profile updates or video tags), while facts represent daily snapshots of views, subscriptions, and engagement indices.</p>
+
+      <hr>
+
+      <h2>Data Quality Verification with Soda Core</h2>
+
+      <p>In data engineering, silent failures are the worst. A script that runs successfully but inputs zero rows or corrupts dates is more dangerous than a crashing script. To catch these issues, the pipeline integrates <strong>Soda Core</strong> checks directly inside the Airflow sequence.</p>
+
+      <p>Soda Core is a lightweight YAML-defined assertions framework. Before transitioning data from staging to the marts layer, Airflow executes a Soda check against the tables. A configuration file like the one below validates the video records:</p>
+
+<pre style="margin:1rem 0;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;font-family:var(--font-mono);font-size:0.875rem;"><code># soda/checks/staging_videos.yml
+checks for staging.stg_videos:
+  - row_count > 0
+  - video_id:
+      text_length_between: [1, 50]
+      missing_percent = 0%
+  - view_count:
+      min >= 0
+  - published_at:
+      invalid_percent = 0%
+  - duplicate_count(video_id) = 0</code></pre>
+
+      <p>If any test fails, Soda returns a non-zero exit code, raising an Airflow exception. This ensures that only verified, clean datasets reach the final analysis layer.</p>
+
+      <hr>
+
+      <h2>Local Development Environment and CI/CD</h2>
+
+      <p>A key goal was making the pipeline easy to run locally while keeping it reproducible in production. We accomplished this using Docker Compose and GitHub Actions.</p>
+
+      <h3>Docker Compose</h3>
+      <p>The local development environment runs Airflow, PostgreSQL, and Soda Core in isolated containers. By mapping local directories to container workspaces, we can write DAGs and SQL code locally and see updates immediately:</p>
+
+      <ul>
+        <li><code>postgres:15-alpine</code>: Houses our multi-layer database.</li>
+        <li><code>apache/airflow:2.7-python3.10</code>: Configured with necessary environment connections to access the database and the API.</li>
+        <li><code>local-runners</code>: A utility container pre-configured with Python libraries and Soda Core CLI for running integration checks manually.</li>
+      </ul>
+
+      <h3>GitHub Actions CI/CD Pipeline</h3>
+      <p>Whenever a pull request is created or code is pushed to <code>main</code>, GitHub Actions automatically executes our pipeline tests. The workflow provisions a mock PostgreSQL database, pulls test JSON data, performs the raw-to-staging transformations, runs the Soda Core checks, and runs unit tests using pytest. Only when all tests pass is the code merged.</p>
+
+      <hr>
+
+      <h2>Challenges and Solutions</h2>
+
+      <h3>1. YouTube API Quotas</h3>
+      <p>The YouTube Data API has a strict daily quota (usually 10,000 units). Operations like listing video comments are expensive. To solve this, the pipeline caches API results locally in Airflow's filesystem during extraction and runs incrementally, querying only videos updated in the last 48 hours.</p>
+
+      <h3>2. Schema Evolution</h3>
+      <p>If YouTube introduces a new field or nested structure to the payload, strict tables might crash. By using the <code>JSONB</code> type in PostgreSQL's Raw layer, we avoid load crashes. The parsing rules can then be safely updated in the staging views without losing historical raw records.</p>
+
+      <hr>
+
+      <h2>Conclusion</h2>
+
+      <p>Building this end-to-end pipeline highlights the importance of data quality gates and schema separation. Designing with Docker and Airflow from day one ensures scalability. The architecture is flexible enough to integrate other social media APIs (like Twitch or Twitter) by simply adding a new raw schema and extending the transformations.</p>
+
+      <hr>
+
+      <p style="font-size:0.875rem;color:var(--color-text-muted);">
+        <em>Repository and References:</em><br>
+        Source Code: <a href="https://github.com/SagarMarthandan/Youtube_E2E_DE" target="_blank" rel="noopener">SagarMarthandan/Youtube_E2E_DE</a><br>
+        Documentation: <a href="https://developers.google.com/youtube/v3" target="_blank" rel="noopener">YouTube Data API v3 Official Documentation</a><br>
+        Soda Core: <a href="https://docs.soda.io/" target="_blank" rel="noopener">Soda Core Validation Docs</a>
+      </p>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG Image Source — sagarmarthandan.github.io</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; }
+  .og {
+    width: 1200px;
+    height: 630px;
+    background: #0f0f0f;
+    color: #e5e5e5;
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 60px 72px;
+    position: relative;
+  }
+  .og::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #60a5fa, #7c3aed);
+  }
+  .og::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    width: 600px; height: 600px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 0%, rgba(96,165,250,0.08), transparent 60%);
+    pointer-events: none;
+  }
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .monogram {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: #60a5fa;
+  }
+  .brand {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 28px;
+    color: #e5e5e5;
+    letter-spacing: -0.01em;
+  }
+  .brand .italic { font-style: italic; color: #999; }
+  .middle {
+    position: relative;
+    z-index: 1;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a8a8a;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 88px;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    color: #e5e5e5;
+    margin-bottom: 28px;
+  }
+  h1 .italic { font-style: italic; color: #999; }
+  h1 .accent { color: #60a5fa; }
+  .subtitle {
+    font-size: 24px;
+    line-height: 1.4;
+    color: #999;
+    max-width: 760px;
+  }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 1;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 700px;
+  }
+  .stack span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    padding: 8px 14px;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: #8a8a8a;
+    background: #1a1a1a;
+  }
+  .url {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: #60a5fa;
+    letter-spacing: 0.025em;
+  }
+</style>
+</head>
+<body>
+<div class="og">
+  <div class="top">
+    <div class="monogram">SM</div>
+    <div class="brand">Sagar <span class="italic">Marthandan</span></div>
+  </div>
+  <div class="middle">
+    <div class="tag">Data · Analytics · Engineering · Berlin</div>
+    <h1><span class="italic">Data</span> Analytics<br>Engineer<span class="accent">.</span></h1>
+    <p class="subtitle">Building end-to-end data platforms — from raw ingestion to production-grade dashboards.</p>
+  </div>
+  <div class="bottom">
+    <div class="stack">
+      <span>dbt</span>
+      <span>Airflow</span>
+      <span>Snowflake</span>
+      <span>BigQuery</span>
+      <span>Spark</span>
+      <span>Kafka</span>
+      <span>Databricks</span>
+      <span>Python</span>
+    </div>
+    <div class="url">sagarmarthandan.github.io</div>
+  </div>
+</div>
+</body>
+</html>

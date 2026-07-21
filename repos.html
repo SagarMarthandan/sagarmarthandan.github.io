@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Repos — Sagar Marthandan</title>
 <meta name="description" content="All my data engineering, analytics, and AI projects on GitHub.">
+<meta property="og:title" content="Repos — Sagar Marthandan">
+<meta property="og:description" content="All my data engineering, analytics, and AI projects on GitHub.">
+<meta property="og:url" content="https://sagarmarthandan.github.io/repos.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://sagarmarthandan.github.io/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sagar Marthandan — Data Analytics Engineer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Repos — Sagar Marthandan">
+<meta name="twitter:image" content="https://sagarmarthandan.github.io/images/og-image.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='68' text-anchor='middle' font-family='JetBrains Mono,monospace' font-size='42' font-weight='700' fill='%2360a5fa'>SM</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -218,6 +229,118 @@ footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrin
 .delay-2 { animation-delay: 0.15s; }
 .delay-3 { animation-delay: 0.25s; }
 .delay-4 { animation-delay: 0.35s; }
+.github-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+@media (min-width: 40rem) {
+  .github-stats { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+}
+.github-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.github-stat .stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+.github-stat .stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.github-stat .stat-value .placeholder {
+  display: inline-block;
+  width: 2.5rem;
+  height: 1.5rem;
+  background: var(--color-border);
+  border-radius: 0.25rem;
+  opacity: 0.4;
+  animation: pulse-skel 1.5s ease-in-out infinite;
+}
+@keyframes pulse-skel {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.15; }
+}
+.github-stat .stat-sub {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+.github-stats-error {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: 0.5rem;
+}
+.lang-bar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.lang-bar .lang-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+}
+.lang-bar-track {
+  display: flex;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  background: var(--color-border);
+}
+.lang-bar-track span {
+  display: block;
+  height: 100%;
+  transition: width 0.6s ease;
+}
+.lang-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+.lang-bar-legend .lang-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+}
+.lang-bar-legend .lang-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.lang-bar-legend .lang-pct {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
 </style>
 </head>
 <body>
@@ -245,6 +368,35 @@ footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrin
   </div>
 
   <div class="container page-divider"></div>
+  <div class="container">
+    <div class="github-stats fade-up" id="githubStats" aria-label="GitHub statistics">
+      <div class="github-stat">
+        <span class="stat-label">Public Repos</span>
+        <span class="stat-value" id="statRepos"><span class="placeholder"></span></span>
+        <span class="stat-sub" id="statReposSub">&nbsp;</span>
+      </div>
+      <div class="github-stat">
+        <span class="stat-label">Total Stars</span>
+        <span class="stat-value" id="statStars"><span class="placeholder"></span></span>
+        <span class="stat-sub" id="statStarsSub">&nbsp;</span>
+      </div>
+      <div class="github-stat">
+        <span class="stat-label">Total Forks</span>
+        <span class="stat-value" id="statForks"><span class="placeholder"></span></span>
+        <span class="stat-sub" id="statForksSub">&nbsp;</span>
+      </div>
+      <div class="github-stat">
+        <span class="stat-label">Followers</span>
+        <span class="stat-value" id="statFollowers"><span class="placeholder"></span></span>
+        <span class="stat-sub" id="statFollowersSub">&nbsp;</span>
+      </div>
+      <div class="lang-bar" id="langBar" hidden>
+        <span class="lang-label">Top Languages</span>
+        <div class="lang-bar-track" id="langBarTrack"></div>
+        <div class="lang-bar-legend" id="langBarLegend"></div>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <div class="repo-filters fade-up" id="filters">
@@ -645,6 +797,68 @@ filters.forEach(btn => {
     });
   });
 });
+// GitHub live stats
+(async function loadGitHubStats() {
+  const USER = 'SagarMarthandan';
+  const langColors = {
+    Python: '#3572A5', Jupyter: '#DA5B0B', HTML: '#e34c26', HCL: '#844FBA',
+    Go: '#00ADD8', Dockerfile: '#384d54', Shell: '#89e051', SQL: '#e38c00',
+    JavaScript: '#f1e05a', TypeScript: '#3178c6', CSS: '#563d7c',
+  };
+  const $ = id => document.getElementById(id);
+  const fail = msg => {
+    const box = $('githubStats');
+    box.innerHTML = '<p class="github-stats-error">' + msg + '</p>';
+  };
+  try {
+    const userRes = await fetch('https://api.github.com/users/' + USER);
+    if (!userRes.ok) throw new Error('user fetch ' + userRes.status);
+    const user = await userRes.json();
+    const reposRes = await fetch('https://api.github.com/users/' + USER + '/repos?per_page=100');
+    if (!reposRes.ok) throw new Error('repos fetch ' + reposRes.status);
+    const repos = await reposRes.json();
+
+    const stars = repos.reduce((s, r) => s + r.stargazers_count, 0);
+    const forks = repos.reduce((s, r) => s + r.forks_count, 0);
+    const ownRepos = repos.filter(r => !r.fork).length;
+
+    $('statRepos').textContent = user.public_repos;
+    $('statReposSub').textContent = ownRepos + ' original · ' + (user.public_repos - ownRepos) + ' forks';
+    $('statStars').textContent = stars;
+    $('statStarsSub').textContent = 'across ' + user.public_repos + ' repos';
+    $('statForks').textContent = forks;
+    $('statForksSub').textContent = 'community contributions';
+    $('statFollowers').textContent = user.followers;
+    $('statFollowersSub').textContent = 'following ' + user.following;
+
+    // Language breakdown (bytes-weighted, original repos only)
+    const langBytes = {};
+    repos.filter(r => !r.fork && r.language).forEach(r => {
+      langBytes[r.language] = (langBytes[r.language] || 0) + r.size * 1024;
+    });
+    const total = Object.values(langBytes).reduce((a, b) => a + b, 0);
+    if (total > 0) {
+      const top = Object.entries(langBytes).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      const track = $('langBarTrack');
+      const legend = $('langBarLegend');
+      top.forEach(([lang, bytes]) => {
+        const pct = (bytes / total) * 100;
+        const seg = document.createElement('span');
+        seg.style.width = pct + '%';
+        seg.style.background = langColors[lang] || '#8a8a8a';
+        seg.title = lang + ' ' + pct.toFixed(1) + '%';
+        track.appendChild(seg);
+        const item = document.createElement('span');
+        item.className = 'lang-item';
+        item.innerHTML = '<span class="lang-dot" style="background:' + (langColors[lang] || '#8a8a8a') + '"></span>' + lang + ' <span class="lang-pct">' + pct.toFixed(1) + '%</span>';
+        legend.appendChild(item);
+      });
+      $('langBar').hidden = false;
+    }
+  } catch (e) {
+    fail('GitHub stats unavailable — rate limited or offline. Visit github.com/SagarMarthandan.');
+  }
+})();
 
 // Theme toggle
 const toggle = document.getElementById('themeToggle');

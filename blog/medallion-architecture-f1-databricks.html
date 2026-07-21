@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medallion Architecture in Practice: Building an F1 Data Platform on Azure Databricks — Sagar Marthandan</title>
+<meta name="description" content="A deep dive into building an end-to-end Formula 1 data platform on Azure Databricks using PySpark, Delta Lake, and Azure Data Factory across Bronze, Silver, and Gold layers.">
+<meta property="og:title" content="Medallion Architecture in Practice: Building an F1 Data Platform on Azure Databricks">
+<meta property="og:description" content="A deep dive into building an end-to-end Formula 1 data platform on Azure Databricks using PySpark, Delta Lake, and Azure Data Factory across Bronze, Silver, and Gold layers.">
+<meta property="og:url" content="https://sagarmarthandan.github.io/blog/medallion-architecture-f1-databricks.html">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://sagarmarthandan.github.io/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sagar Marthandan — Data Analytics Engineer">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Medallion Architecture in Practice: Building an F1 Data Platform on Azure Databricks">
+<meta name="twitter:image" content="https://sagarmarthandan.github.io/images/og-image.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='68' text-anchor='middle' font-family='JetBrains Mono,monospace' font-size='42' font-weight='700' fill='%2360a5fa'>SM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Instrument Serif', 'Iowan Old Style', serif;
+  --color-bg: #fafafa;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-muted: #737373;
+  --color-accent: #2563eb;
+  --color-border: #e5e5e5;
+  --color-surface: #fff;
+}
+[data-theme="dark"] {
+  --color-bg: #0f0f0f;
+  --color-text: #e5e5e5;
+  --color-text-secondary: #999;
+  --color-text-muted: #8a8a8a;
+  --color-accent: #60a5fa;
+  --color-border: #2a2a2a;
+  --color-surface: #1a1a1a;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5; min-height: 100dvh; display: flex; flex-direction: column;
+  transition: background 0.3s, color 0.3s;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font: inherit; border: none; background: none; }
+img { max-width: 100%; height: auto; display: block; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.container { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+.skip-link { position: absolute; top: -100%; left: 1rem; z-index: 100; background: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.skip-link:focus { top: 1rem; }
+nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem; max-width: 64rem; margin: 0 auto; width: 100%; position: relative; z-index: 20;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.625rem; }
+.nav-brand .brand-name { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.1; color: var(--color-text); letter-spacing: -0.01em; transition: opacity 0.2s; }
+.nav-brand:hover .brand-name { opacity: 0.7; }
+.nav-links { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+@media (min-width: 40rem) { .nav-links { gap: 1.5rem; } }
+.nav-links a { font-size: 1.125rem; color: var(--color-text-secondary); transition: color 0.2s; font-family: var(--font-display); }
+.nav-links a:hover { color: var(--color-text); }
+.theme-toggle { width: 2rem; height: 2rem; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: opacity 0.2s; line-height: 1; }
+.theme-toggle:hover { opacity: 0.7; }
+main { flex: 1; }
+.post-header {
+  padding: 5rem 0 0;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header { padding: 6rem 0 0; } }
+.post-header .pre-title {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+.post-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+@media (min-width: 40rem) { .post-header h1 { font-size: 3.25rem; } }
+.post-header .meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.post-body {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+}
+.post-body h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin: 2.5rem 0 1rem;
+  font-weight: 400;
+}
+.post-body h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 2rem 0 0.75rem;
+}
+.post-body p { margin-bottom: 1.25rem; }
+.post-body a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.post-body a:hover { text-decoration-thickness: 2px; }
+.post-body blockquote {
+  border-left: 2px solid var(--color-border);
+  padding-left: 1.25rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+.post-body ul, .post-body ol { margin-bottom: 1.25rem; padding-left: 1.5rem; }
+.post-body li { margin-bottom: 0.5rem; }
+.post-body strong { color: var(--color-text); font-weight: 600; }
+.post-body .callout {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.post-body .callout strong { color: var(--color-accent); }
+.post-body hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 2rem 0;
+}
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: color 0.2s;
+  margin-bottom: 2rem;
+}
+.back-link:hover { color: var(--color-accent); }
+footer { border-top: 1px solid var(--color-border); margin-top: 5rem; flex-shrink: 0; position: relative; z-index: 10; }
+.footer-inner { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-top { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; }
+@media (min-width: 40rem) { .footer-top { flex-direction: row; align-items: center; } }
+.footer-top p { font-family: var(--font-display); font-size: 1.875rem; line-height: 1.2; color: var(--color-text); }
+@media (min-width: 40rem) { .footer-top p { font-size: 2.25rem; } }
+.footer-top p .display-italic { font-style: italic; }
+.footer-top .email-link { font-family: var(--font-mono); font-size: 0.875rem; letter-spacing: 0.025em; color: var(--color-text); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--color-border); transition: color 0.2s, text-decoration-color 0.2s; }
+.footer-top .email-link:hover { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+.footer-bottom { display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+@media (min-width: 40rem) { .footer-bottom { flex-direction: row; align-items: center; } }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer-links a { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-text); }
+.footer-copy { font-size: 0.75rem; font-family: var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-text-muted); }
+.fade-up { animation: fade-up 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.delay-1 { animation-delay: 50ms; }
+.delay-2 { animation-delay: 0.15s; }
+.delay-3 { animation-delay: 0.25s; }
+.delay-4 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<nav>
+  <a href="/" class="nav-brand" aria-label="Home">
+    <span class="brand-name">Sagar Marthandan</span>
+  </a>
+  <div class="nav-links">
+    <a href="/">home</a>
+    <a href="/repos.html">repos</a>
+    <a href="/resume.html">resume</a>
+    <a href="/contact.html">contact</a>
+    <a href="/blog.html">blog</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme" title="Switch theme">☀️</button>
+  </div>
+</nav>
+
+<main id="main">
+  <article>
+    <div class="post-header fade-up">
+      <a href="/blog.html" class="back-link">← Back to blog</a>
+      <p class="pre-title">Data Engineering · Azure · Delta Lake</p>
+      <h1>Medallion Architecture in Practice: Building an F1 Data Platform on Azure Databricks</h1>
+      <div class="meta">
+        <span>July 8, 2026</span>
+        <span>·</span>
+        <span>8 min read</span>
+      </div>
+    </div>
+
+    <div class="post-body fade-up">
+      <p>Formula 1 is a sport driven by millisecond advantages and massive amounts of telemetry data. From lap times and pit stop strategies to driver telemetry and qualifying performance spanning over seven decades (1950 to present), raw motor racing datasets present classic data engineering challenges: heterogeneous file formats, schema evolution, nested structures, and concurrent analytical reads.</p>
+
+      <p>When building a cloud-native platform to analyze Formula 1 historical race performance, simply dropping raw CSVs and JSON payloads into object storage leads to "data swamp" symptoms: inconsistent data types, duplicate records, missing race telemetry, and painfully slow analytics queries. To solve this, I designed and implemented an end-to-end data platform using the <strong>Medallion Architecture</strong> pattern on Azure Databricks, powered by PySpark, Delta Lake, and Azure Data Factory (ADF).</p>
+
+      <p>Here is an engineering teardown of how the platform transforms raw motor racing feeds into high-performance dimensional models for downstream analytics.</p>
+
+      <hr>
+
+      <h2>What is Medallion Architecture and Why It Matters</h2>
+
+      <p>The Medallion Architecture is a data design pattern that structures data logically into three distinct layers — <strong>Bronze</strong>, <strong>Silver</strong>, and <strong>Gold</strong>. Each layer progressively improves data quality, structure, and query readiness:</p>
+
+      <ul>
+        <li><strong>Bronze Layer (Raw Storage):</strong> The landing zone. Ingests raw data from source systems into Azure Data Lake Storage Gen2 (ADLS Gen2) as-is (CSV, JSON, Parquet) with append-only semantics and metadata lineage (such as ingestion timestamps and source file paths).</li>
+        <li><strong>Silver Layer (Cleansed & Conformed):</strong> The enterprise data lake layer. Raw Bronze payloads are parsed, cleansed, deduplicated, type-cast, and converted into ACID-compliant Delta Lake tables with explicit schemas.</li>
+        <li><strong>Gold Layer (Curated Business Analytics):</strong> The consumption layer. Data is aggregated and modeled into Star Schemas (fact and dimension tables) and analytical views optimized for BI tools like Power BI, Superset, or custom analytics applications.</li>
+      </ul>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 1 — F1 Data Platform Medallion Architecture on Azure</div>
+        <svg viewBox="0 0 720 270" style="width:100%;height:auto;max-width:720px;display:block;margin:0 auto;">
+          <!-- Ingestion Source -->
+          <rect x="15" y="45" width="105" height="180" rx="8" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3,3" opacity="0.3"/>
+          <text x="67" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" font-weight="600" opacity="0.7">SOURCES</text>
+          
+          <rect x="25" y="80" width="85" height="32" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="67" y="99" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.8">Ergast API (JSON)</text>
+
+          <rect x="25" y="120" width="85" height="32" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="67" y="139" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.8">Race Feeds (CSV)</text>
+
+          <rect x="25" y="160" width="85" height="32" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="67" y="179" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.8">Qualifying / Lap Feeds</text>
+
+          <!-- Arrow to Bronze -->
+          <line x1="120" y1="135" x2="155" y2="135" stroke="currentColor" stroke-width="1.5" opacity="0.4" marker-end="url(#arrF1)"/>
+
+          <!-- Bronze Layer -->
+          <rect x="160" y="30" width="150" height="210" rx="10" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.6"/>
+          <text x="235" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#f59e0b" font-weight="600">BRONZE LAYER</text>
+          <text x="235" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Raw Ingestion (ADLS Gen2)</text>
+
+          <rect x="175" y="80" width="120" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="235" y="98" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">raw_drivers (JSON)</text>
+
+          <rect x="175" y="120" width="120" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="235" y="138" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">raw_results (CSV)</text>
+
+          <rect x="175" y="160" width="120" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="235" y="178" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">raw_lap_times (CSV)</text>
+
+          <text x="235" y="215" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#f59e0b" opacity="0.8">+ Ingest Timestamp Meta</text>
+
+          <!-- Arrow to Silver -->
+          <line x1="310" y1="135" x2="345" y2="135" stroke="currentColor" stroke-width="1.5" opacity="0.4" marker-end="url(#arrF1)"/>
+
+          <!-- Silver Layer -->
+          <rect x="350" y="30" width="160" height="210" rx="10" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-opacity="0.6"/>
+          <text x="430" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#60a5fa" font-weight="600">SILVER LAYER</text>
+          <text x="430" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Cleansed Delta Lake Tables</text>
+
+          <rect x="365" y="80" width="130" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="430" y="98" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">f1_silver.drivers</text>
+
+          <rect x="365" y="120" width="130" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="430" y="138" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">f1_silver.results</text>
+
+          <rect x="365" y="160" width="130" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="430" y="178" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">f1_silver.lap_times</text>
+
+          <text x="430" y="215" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#60a5fa" opacity="0.8">ACID / Schema Enforced</text>
+
+          <!-- Arrow to Gold -->
+          <line x1="510" y1="135" x2="545" y2="135" stroke="currentColor" stroke-width="1.5" opacity="0.4" marker-end="url(#arrF1)"/>
+
+          <!-- Gold Layer -->
+          <rect x="550" y="30" width="155" height="210" rx="10" fill="none" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.6"/>
+          <text x="627" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#10b981" font-weight="600">GOLD LAYER</text>
+          <text x="627" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Dimensional Star Schema</text>
+
+          <rect x="565" y="80" width="125" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="627" y="98" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">fact_lap_times</text>
+
+          <rect x="565" y="120" width="125" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="627" y="138" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">dim_drivers / dim_circuits</text>
+
+          <rect x="565" y="160" width="125" height="30" rx="4" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.15"/>
+          <text x="627" y="178" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="currentColor" opacity="0.85">driver_standings</text>
+
+          <text x="627" y="215" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#10b981" opacity="0.8">Power BI / Dashboards</text>
+
+          <defs>
+            <marker id="arrF1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <hr>
+
+      <h2>The F1 Dataset & Ingestion Sources</h2>
+
+      <p>The platform consumes motor racing data originating from the Ergast API dataset. The dataset comprises eight core entity streams:</p>
+
+      <ol>
+        <li><code>circuits</code> (CSV) — Circuit names, locations, country, latitude/longitude, and altitude.</li>
+        <li><code>races</code> (CSV) — Grand Prix race schedules, rounds, dates, times, and circuit links.</li>
+        <li><code>drivers</code> (JSON) — Driver identities, dob, nationality, code, and nested name objects.</li>
+        <li><code>constructors</code> (JSON) — Team details, constructor refs, and nationalities.</li>
+        <li><code>results</code> (CSV) — Race results including grid position, final position, points earned, laps completed, and time differentials.</li>
+        <li><code>pit_stops</code> (Multi-line JSON) — Pit stop durations, lap numbers, stop counts, and millisecond timings.</li>
+        <li><code>lap_times</code> (Split CSVs) — Full lap-by-lap telemetry for every driver across all races.</li>
+        <li><code>qualifying</code> (Multi-line JSON) — Q1, Q2, and Q3 lap times per driver per Grand Prix.</li>
+      </ol>
+
+      <p>Because these feeds mix flat CSVs with nested multi-line JSON structures, attempting direct SQL analytical queries without a structured lakehouse model introduces severe performance bottlenecks and fragile transformations.</p>
+
+      <hr>
+
+      <h2>Bronze Layer: ADLS Gen2 Ingestion with ADF</h2>
+
+      <p>In the Bronze layer, raw files are ingested into Azure Data Lake Storage Gen2 (ADLS Gen2) using Azure Data Factory. To preserve auditing capabilities and data lineage, raw payloads are never modified during Bronze ingestion.</p>
+
+      <p>Databricks mounts ADLS Gen2 storage containers using Azure Service Principals registered in Entra ID (formerly Azure Active Directory), with secret credentials secured inside <strong>Azure Key Vault</strong> secret scopes. This avoids hardcoding keys in PySpark notebooks:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;">client_secret = dbutils.secrets.get(scope="f1-keyvault-scope", key="databricks-app-client-secret")
+
+configs = {
+    "fs.azure.account.auth.type": "OAuth",
+    "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+    "fs.azure.account.oauth2.client.id": "4b68xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "fs.azure.account.oauth2.client.secret": client_secret,
+    "fs.azure.account.oauth2.client.endpoint": "https://login.microsoftonline.com/your-tenant-id/oauth2/token"
+}
+
+dbutils.fs.mount(
+    source="abfss://raw@f1dlstorage.dfs.core.windows.net/",
+    mount_point="/mnt/f1dlstorage/raw",
+    extra_configs=configs
+)</code></pre>
+      </div>
+
+      <p>When ingesting raw files into Bronze, we attach an ingestion timestamp (<code>ingestion_date</code>) and dynamic source path tracking to record exactly when and where each file entered the lakehouse.</p>
+
+      <hr>
+
+      <h2>Silver Layer: Schema Enforcement & Delta Cleansing</h2>
+
+      <p>The Silver layer transitions raw Bronze datasets into clean, reliable Delta Lake tables. The key engineering goals here are <strong>schema enforcement</strong>, <strong>data type normalization</strong>, <strong>column renaming to snake_case</strong>, and <strong>handling null or invalid telemetry values</strong>.</p>
+
+      <p>Below is a PySpark snippet transforming raw nested driver JSON payloads into the Silver Delta table:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;">from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType
+from pyspark.sql.functions import col, current_timestamp, concat, lit
+
+# Define explicit schema to guarantee schema enforcement
+name_schema = StructType([
+    StructField("forename", StringType(), True),
+    StructField("surname", StringType(), True)
+])
+
+drivers_schema = StructType([
+    StructField("driverId", IntegerType(), False),
+    StructField("driverRef", StringType(), True),
+    StructField("number", IntegerType(), True),
+    StructField("code", StringType(), True),
+    StructField("name", name_schema, True),
+    StructField("dob", DateType(), True),
+    StructField("nationality", StringType(), True),
+    StructField("url", StringType(), True)
+])
+
+# Read raw JSON from Bronze container
+raw_drivers_df = spark.read \
+    .schema(drivers_schema) \
+    .json("/mnt/f1dlstorage/raw/drivers.json")
+
+# Cleanse, flatten nested fields, rename to snake_case, add metadata
+silver_drivers_df = raw_drivers_df \
+    .withColumnRenamed("driverId", "driver_id") \
+    .withColumnRenamed("driverRef", "driver_ref") \
+    .withColumn("name", concat(col("name.forename"), lit(" "), col("name.surname"))) \
+    .withColumn("ingestion_date", current_timestamp()) \
+    .drop("url")
+
+# Write to Silver Delta Lake table with partition overwrite or merge
+silver_drivers_df.write \
+    .format("delta") \
+    .mode("overwrite") \
+    .saveAsTable("f1_silver.drivers")</code></pre>
+      </div>
+
+      <p>By enforcing <code>StructType</code> schemas at read time, corrupted payloads or unexpected data shape shifts fail immediately in the Silver ingestion step rather than contaminating downstream Gold reporting tables.</p>
+
+      <hr>
+
+      <h2>Gold Layer: Dimensional Modeling for F1 Analytics</h2>
+
+      <p>The Gold layer models cleansed Silver tables into a business-ready <strong>Star Schema</strong>. In Formula 1 analytics, race outcomes depend heavily on multi-dimensional relationships: driver performance over time, constructor championship points, circuit characteristics, and pit stop strategy efficiency.</p>
+
+      <h3>Gold Data Model Structure:</h3>
+      <ul>
+        <li><code>fact_results</code> — Granular race results (points, positions, grids, fastest laps, durations).</li>
+        <li><code>fact_lap_times</code> — High-volume fact table storing lap-by-lap milliseconds per driver.</li>
+        <li><code>dim_drivers</code> — Driver dimension (name, nationality, racing code, dob).</li>
+        <li><code>dim_circuits</code> — Circuit location dimension (lat, long, country, altitude).</li>
+        <li><code>dim_constructors</code> — Constructor dimension (team name, nationality).</li>
+        <li><code>driver_standings</code> — Aggregated analytical Gold view computing cumulative championship rankings by season.</li>
+      </ul>
+
+      <p>Here is how PySpark window functions compute the aggregate Gold table for driver standings across race seasons:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;">from pyspark.sql.window import Window
+from pyspark.sql.functions import sum as _sum, count, when, col, rank
+
+# Calculate total points and wins per driver per race season
+race_results_df = spark.table("f1_gold.fact_race_results")
+
+driver_standings_df = race_results_df \
+    .groupBy("race_year", "driver_name", "driver_nationality", "team_name") \
+    .agg(
+        _sum("points").alias("total_points"),
+        count(when(col("position") == 1, 1)).alias("wins")
+    )
+
+# Apply Window spec to rank drivers by points and wins per year
+driver_rank_spec = Window.partitionBy("race_year").orderBy(col("total_points").desc(), col("wins").desc())
+
+final_standings_df = driver_standings_df \
+    .withColumn("rank", rank().over(driver_rank_spec))
+
+final_standings_df.write \
+    .format("delta") \
+    .mode("overwrite") \
+    .saveAsTable("f1_gold.driver_standings")</code></pre>
+      </div>
+
+      <hr>
+
+      <h2>Delta Lake Power Features: ACID, Time Travel & Schema Evolution</h2>
+
+      <p>Building on standard Parquet files leaves data pipelines vulnerable to partial write failures during job restarts and concurrent read conflicts. Using <strong>Delta Lake</strong> as the storage format across Silver and Gold provides three key production guarantees:</p>
+
+      <h3>1. ACID Transactions & Atomic Upserts</h3>
+      <p>When updating lap times or re-processing race telemetry files, Delta Lake uses a transaction log (<code>_delta_log</code>) to guarantee atomic commits. We perform idempotent upserts into Silver tables using PySpark's <code>DeltaTable.merge()</code> API:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;">from delta.tables import DeltaTable
+
+silver_delta_table = DeltaTable.forName(spark, "f1_silver.results")
+
+silver_delta_table.alias("target").merge(
+    source=incoming_results_df.alias("updates"),
+    condition="target.result_id = updates.result_id AND target.race_id = updates.race_id"
+).whenMatchedUpdateAll() \
+ .whenNotMatchedInsertAll() \
+ .execute()</code></pre>
+      </div>
+
+      <h3>2. Time Travel & Historical Auditability</h3>
+      <p>FIA penalty decisions and point recalculations frequently alter official race results days after a Grand Prix concludes. Delta Lake's time travel enables auditing past table states for historical reproducibility:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;"># Query driver standings exactly as they were recorded at Version 3
+df_version_3 = spark.read \
+    .option("versionAsOf", 3) \
+    .table("f1_gold.driver_standings")
+
+# Or restore table to prior state after erroneous ingest
+spark.sql("RESTORE TABLE f1_silver.results TO VERSION AS OF 2")</code></pre>
+      </div>
+
+      <h3>3. Controlled Schema Evolution</h3>
+      <p>When Formula 1 introduced Sprint Races, raw qualifying data payloads expanded to include sprint shootout attributes. Setting <code>.option("mergeSchema", "true")</code> allowed Delta Lake to gracefully append new columns without breaking legacy downstream readers.</p>
+
+      <hr>
+
+      <h2>Azure Data Factory Orchestration Pattern</h2>
+
+      <p>To run the Medallion pipeline in production, <strong>Azure Data Factory (ADF)</strong> orchestrates notebook execution sequentially across layers while enforcing data validation gates between stages.</p>
+
+      <div style="margin:2rem 0;padding:1.5rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.75rem;overflow-x:auto;">
+        <div style="font-family:var(--font-mono);font-size:0.625rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:1rem;">Fig. 2 — Azure Data Factory Orchestration Pipeline Flow</div>
+        <svg viewBox="0 0 700 200" style="width:100%;height:auto;max-width:700px;display:block;margin:0 auto;">
+          <!-- Master Trigger -->
+          <rect x="15" y="70" width="100" height="55" rx="6" fill="currentColor" opacity="0.06" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+          <text x="65" y="95" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="currentColor" font-weight="600">ADF Trigger</text>
+          <text x="65" y="110" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.5">Scheduled / Event</text>
+
+          <line x1="115" y1="97" x2="155" y2="97" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrADF)"/>
+
+          <!-- Ingest Raw Activity -->
+          <rect x="160" y="70" width="115" height="55" rx="6" fill="none" stroke="#f59e0b" stroke-width="1.2" stroke-opacity="0.7"/>
+          <text x="217" y="93" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#f59e0b" font-weight="600">Bronze Ingest</text>
+          <text x="217" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.6">ADF Copy Activity</text>
+
+          <line x1="275" y1="97" x2="315" y2="97" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrADF)"/>
+
+          <!-- Transform Silver Notebook -->
+          <rect x="320" y="70" width="125" height="55" rx="6" fill="none" stroke="#60a5fa" stroke-width="1.2" stroke-opacity="0.7"/>
+          <text x="382" y="93" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#60a5fa" font-weight="600">Silver Cleansing</text>
+          <text x="382" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.6">Databricks Notebook</text>
+
+          <line x1="445" y1="97" x2="485" y2="97" stroke="currentColor" stroke-width="1.5" opacity="0.3" marker-end="url(#arrADF)"/>
+
+          <!-- Gold Star Schema Notebook -->
+          <rect x="490" y="70" width="125" height="55" rx="6" fill="none" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.7"/>
+          <text x="552" y="93" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#10b981" font-weight="600">Gold Aggregations</text>
+          <text x="552" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="currentColor" opacity="0.6">Databricks Notebook</text>
+
+          <!-- Status indicator -->
+          <circle cx="645" cy="97" r="12" fill="none" stroke="#10b981" stroke-width="1.5"/>
+          <text x="645" y="100" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#10b981">✓</text>
+
+          <defs>
+            <marker id="arrADF" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <p>The pipeline relies on dynamic parameter passing. When ADF triggers a Databricks notebook activity, it passes <code>p_file_date</code> dynamically. In PySpark, widgets capture parameter values seamlessly:</p>
+
+      <div style="margin:1.5rem 0;padding:1.25rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:0.5rem;overflow-x:auto;">
+        <pre style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.6;color:var(--color-text);"><code style="background:none;border:none;padding:0;">dbutils.widgets.text("p_file_date", "2024-03-24")
+v_file_date = dbutils.widgets.get("p_file_date")
+
+# Filter incoming Bronze files dynamically by run date
+filtered_df = raw_results_df.filter(col("file_date") == v_file_date)</code></pre>
+      </div>
+
+      <hr>
+
+      <h2>Production Lessons & Performance Tuning</h2>
+
+      <p>Building this platform surfaced critical lessons regarding Spark execution performance and storage optimization:</p>
+
+      <h3>1. Partitioning Strategy & Small File Mitigations</h3>
+      <p>Partitioning Gold tables by <code>race_year</code> dramatically sped up historical queries (e.g., querying 2023 season driver standings skipped scanning 70+ years of unneeded Parquet files). However, over-partitioning Silver tables led to thousands of tiny 50KB files. We scheduled Databricks <code>OPTIMIZE</code> jobs with <code>Z-ORDER BY (race_id, driver_id)</code> to consolidate file sizes to 128MB chunks and co-locate related records for fast predicate pushdowns.</p>
+
+      <h3>2. Single-Node vs Multi-Node Compute Costs</h3>
+      <p>For daily incremental updates, spinning up multi-node auto-scaling clusters was cost-inefficient. Leveraging single-node Databricks clusters for Silver transformation jobs reduced Azure DBU consumption by ~40% while remaining well within SLA targets.</p>
+
+      <h3>3. Lakehouse Governance Transition</h3>
+      <p>While mounting ADLS Gen2 directly via DBFS is straightforward during initial development, modern Databricks deployments benefit from <strong>Unity Catalog</strong> to provide fine-grained table access control, automated column lineage, and centralized data discovery across Azure environments.</p>
+
+      <hr>
+
+      <div class="callout">
+        <strong>Repository & Project Artifacts:</strong> The complete codebase including PySpark notebooks, Azure Data Factory pipeline JSON definitions, and Delta Lake setup scripts is open source on GitHub: <a href="https://github.com/SagarMarthandan/F1-AzureDatabricks" target="_blank" rel="noopener">SagarMarthandan/F1-AzureDatabricks</a>.
+      </div>
+    </div>
+  </article>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <p>Let's build something <span class="display-italic">together.</span></p>
+      <a href="mailto:sagar.marthandan@yahoo.com" class="email-link">sagar.marthandan@yahoo.com</a>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-links">
+        <a href="https://github.com/SagarMarthandan" target="_blank" rel="noopener" aria-label="GitHub profile">GitHub</a>
+        <a href="https://linkedin.com/in/sagarmarthandan" target="_blank" rel="noopener" aria-label="LinkedIn profile">LinkedIn</a>
+        <a href="https://twitter.com/sagarmarthandan" target="_blank" rel="noopener" aria-label="X profile">X</a>
+      </div>
+      <p class="footer-copy">© 2026 · Sagar Marthandan · Made with care</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', saved);
+toggle.textContent = saved === 'dark' ? '☀️' : '🌙';
+toggle.addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+});
+</script>
+</body>
+</html>
