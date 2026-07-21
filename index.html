@@ -305,15 +305,15 @@ nav {
 .hero-links a:hover .arrow { transform: translate(2px, -2px); }
 
 .hero-photo {
-  width: 100%;
-  max-width: 16rem;
-  margin: 0 auto 1.5rem;
-  aspect-ratio: 4 / 5;
-  border-radius: 0.75rem;
+  width: 7rem;
+  height: 7rem;
+  margin: 0 0 1.25rem auto;
+  border-radius: 0.625rem;
   overflow: hidden;
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   position: relative;
+  flex-shrink: 0;
 }
 .hero-photo img {
   width: 100%;
@@ -328,12 +328,12 @@ nav {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 0.75rem;
+  border-radius: 0.625rem;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
   pointer-events: none;
 }
 @media (min-width: 48rem) {
-  .hero-photo { max-width: 100%; margin-bottom: 1.25rem; }
+  .hero-photo { width: 8rem; height: 8rem; }
 }
 
 .hero-visual .card {
